@@ -19,95 +19,122 @@ public class AVLtree {
     }
 
     // Helper method to recursively insert a new value in the tree
-    private Node insertRec(Node root, int data) {
+    private Node insertRec(Node node, int data) {
         // If the tree/subtree is empty, create a new node
-        if (root == null) {
-            root = new Node(data);
+        if (node == null) {
+            node = new Node(data);
         }
 
-        if (data < root.data && data != root.data) {
+        if (data < node.data) {
             // If the data is less than the root's data, go to the left subtree
-            root.left = insertRec(root.left, data);
-        } else if (data > root.data && data != root.data) {
+            node.left = insertRec(node.left, data);
+        } else if (data > node.data) {
             // If the data is greater than the root's data, go to the right subtree
-            root.right = insertRec(root.right, data);
+            node.right = insertRec(node.right, data);
+        } else {
+            return node;
         }
 
-        root.height = 1 + Math.max(getHeight(root.left), getHeight(root.right));
-
-
+        updateHeight(node);
+        int balanceFactor = getBalanceFactor(node);
+        
         // Balancing tree
+        // Left Left Case
         /*
-Rotations Required for Balancing:
-To maintain the AVL property, you need to implement the following rotations:
-
-Right Rotation (RR):
-
-Performed when a left-heavy situation occurs.
-Left Rotation (LL):
-
-Performed when a right-heavy situation occurs.
-Left-Right Rotation (LR):
-
-Performed when a left-right-heavy situation occurs.
-Right-Left Rotation (RL):
-
-Performed when a right-left-heavy situation occurs.
-Steps for Correct AVL Tree Insertion:
-Insert Node:
-
-Follow the standard Binary Search Tree insertion logic.
-Update Heights:
-
-After insertion, update the height of each node back up to the root.
-Compute Balance Factor:
-
-Compute balance factors for nodes during the backtracking phase of the recursion.
-Rebalance if Necessary:
-
-Perform appropriate rotations based on the computed balance factors.
-Integration of Rotations:
-Here’s a conceptual outline of how you can rebalance the tree after insertion based on the balance factors:
-
-Right Rotation (RR):
-
-If balance > 1 and new node < left child.
-Left Rotation (LL):
-
-If balance < -1 and new node > right child.
-Left-Right Rotation (LR):
-
-If balance > 1 and new node > left child.
-Right-Left Rotation (RL):
-
-If balance < -1 and new node < right child.
-Example Outline:
-Right Rotate if balance factor > 1 and data less than left child’s data.
-Left Rotate if balance factor < -1 and data greater than right child's data.
-Left-Right Rotate if balance factor > 1 and data greater than left child’s data.
-Right-Left Rotate if balance factor < -1 and data less than right child’s data.
-Summary of Rotation Functions:
-Right Rotate:
-
-Update pointers and change heights of affected nodes correctly.
-Left Rotate:
-
-Update pointers and change heights of affected nodes correctly.
-Left-Right Rotate (Combination):
-
-First, perform a left rotation on the child node, then a right rotation on the current node.
-Right-Left Rotate (Combination):
-
-First, perform a right rotation on the child node, then a left rotation on the current node.
+        Condition: The balance factor is greater than 1, indicating a left-heavy tree.
+        Additionally, the newly inserted data is less than the data in the left child of the node,
+        meaning it has been inserted into the left subtree of the left child.
+        Imbalance Type: Left-Left
+        Rotation: Right Rotation
+        Concept: The imbalance is corrected by performing a right rotation at the node. This
+        involves moving the left child up to replace the node, making the node the right child of
+        its previous left child. This rebalances the subtree by shifting the height distribution.
+        
         */
-
-        if (getBalanceFactor(root) > 1) {
-
-        } else if (getBalanceFactor(root) < -1) {
-
+        if (balanceFactor > 1 && data < node.left.data) {
+            return rightRotation(node);
         }
 
-        return root;
+        // Right Right Case
+        /*
+        Condition: The balance factor is less than -1, indicating a right-heavy tree.
+        Additionally, the newly inserted data is greater than the data in the right child of the
+        node, meaning it has been inserted into the right subtree of the right child.
+        Imbalance Type: Right-Right
+        Rotation: Left Rotation
+        Concept: The imbalance is corrected by performing a left rotation at the node. This
+        involves moving the right child up to replace the node, making the node the left child of
+        its previous right child. This rebalances the subtree by shifting the height distribution.
+        */
+        if (balanceFactor < -1 && data > node.right.data) {
+            return leftRotation(node);
+        }
+
+        // Left Right Case
+        /*
+        Condition: The balance factor is greater than 1, indicating a left-heavy tree.
+        Additionally, the newly inserted data is greater than the data in the left child of the
+        node, meaning it has been inserted into the right subtree of the left child.
+        Imbalance Type: Left-Right
+        Rotation: Left Rotation followed by Right Rotation
+        Concept: This imbalance is corrected by performing two rotations:
+        Step 1: Perform a left rotation on the left child, transforming the left-right structure
+        into a left-left structure.
+        Step 2: Perform a right rotation on the node itself to balance the newly formed left-left
+        structure.
+        */
+        if (balanceFactor > 1 && data > node.left.data) {
+            node.left = leftRotation(node.left);
+            return rightRotation(node);
+        }
+
+        // Right Left Case
+        /*
+        Condition: The balance factor is less than -1, indicating a right-heavy tree. Additionally,
+        the newly inserted data is less than the data in the right child of the node, meaning it
+        has been inserted into the left subtree of the right child.
+        Imbalance Type: Right-Left
+        Rotation: Right Rotation followed by Left Rotation
+        Concept: This imbalance is corrected by performing two rotations:
+
+        Step 1: Perform a right rotation on the right child, transforming the right-left structure
+        into a right-right structure.
+        Step 2: Perform a left rotation on the node itself to balance the newly formed right-right
+        structure.
+        */
+        if (balanceFactor < -1 && data < node.right.data) {
+            node.right = rightRotation(node.right);
+            return leftRotation(node);
+        }
+
+        return node;
+    }
+
+    public void remove(int data) {
+
+    }
+
+    // Copy
+    private void removeRec(int data) {
+    }
+
+    public void rightRotation(Node node) {
+        Node leftOfRoot;
+        if (node.left != null) {
+            leftOfRoot = node.left;
+        }
+    }
+
+    public void leftRotation(Node node) {
+        Node leftOfRoot;
+        if (node.left != null) {
+            leftOfRoot = node.left;
+        }
+    }
+
+
+    private void updateHeight(Node node) {
+        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
     }
 
     private int getHeight(Node node) {
@@ -170,35 +197,40 @@ First, perform a right rotation on the child node, then a left rotation on the c
         if (root != null) {
             // Print spaces proportional to the level to represent tree depth visually
             for (int i = 0; i < level; i++) {
-                System.out.print("  ");
+                System.out.print("    ");
             }
 
             // Print root data, its height, and balance factor
-            System.out.println(root.data + " (Height: " + root.height + ") " + "(balance factor: " + getBalanceFactor(root) + ")");
+            System.out.println(root.data + " (Height: " + root.height + ") " + "(Balance Factor: " + getBalanceFactor(root) + ")");
+
+            int nextLevel = level + 1;
+
             // Recursively print left and right subtrees, with increased level
-            printTreeRec(root.left, level + 1);
-            printTreeRec(root.right, level + 1);
+            if (root.left != null) {
+                printTreeRec(root.left, nextLevel);
+            } else {
+                for (int i = 0; i < nextLevel; i++) {
+                    System.out.print("    ");
+                }
+                System.out.println("_");
+            }
+
+            if (root.right != null) {
+                printTreeRec(root.right, nextLevel);
+            } else {
+                for (int i = 0; i < nextLevel; i++) {
+                    System.out.print("    ");
+                }
+                System.out.println("_");
+            }
         }
     }
 
-    // Method to get the depth (maximum height) of the tree
-    public int getDepth() {
-        return getDepthRec(root);
+    public int getLevel(Node node) {
+        return node.height - 1;
     }
 
-    // Helper method to recursively compute the depth of the tree
-    private int getDepthRec(Node node) {
-        if (node == null) {
-            return 0; // Base case: depth of an empty tree is 0
-        }
-        // Calculate the depth of each subtree
-        int leftDepth = getDepthRec(node.left);
-        int rightDepth = getDepthRec(node.right);
-
-        // Return the larger depth plus one for the current node
-        return Math.max(leftDepth, rightDepth) + 1;
-    }
-
+    // Return Balance Factor of a given node
     private int getBalanceFactor(Node node) {
         if (node == null) {
             return 0;
@@ -208,5 +240,29 @@ First, perform a right rotation on the child node, then a left rotation on the c
         int rightHeight = getHeight(node.right);
 
         return leftHeight - rightHeight;
+    }
+
+    public boolean search(int data) {
+        return searchRec(root, data);
+    }
+
+
+    private boolean searchRec(Node node, int data) {
+        if (node == null) {
+            return false;
+        }
+
+        if (node.data == data) {
+            return true;
+        }
+
+        /*
+        if (searchRec(node.left, data) == false) {
+            return searchRec(node.right, data);
+        } else {
+            return true;
+        }
+        */
+        return searchRec(node.left, data) || searchRec(node.right, data);
     }
 }
