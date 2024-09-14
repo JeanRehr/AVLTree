@@ -52,6 +52,9 @@ public class AVLtree {
         
         */
         if (balanceFactor > 1 && data < node.left.data) {
+            System.out.println("--------------------------------");
+            System.out.println("Performing right rotation.");
+            System.out.println("--------------------------------");
             return rightRotation(node);
         }
 
@@ -67,6 +70,9 @@ public class AVLtree {
         its previous right child. This rebalances the subtree by shifting the height distribution.
         */
         if (balanceFactor < -1 && data > node.right.data) {
+            System.out.println("--------------------------------");
+            System.out.println("Performing left rotation.");
+            System.out.println("--------------------------------");
             return leftRotation(node);
         }
 
@@ -84,6 +90,9 @@ public class AVLtree {
         structure.
         */
         if (balanceFactor > 1 && data > node.left.data) {
+            System.out.println("--------------------------------");
+            System.out.println("Performing left-right rotation.");
+            System.out.println("--------------------------------");
             node.left = leftRotation(node.left);
             return rightRotation(node);
         }
@@ -103,6 +112,9 @@ public class AVLtree {
         structure.
         */
         if (balanceFactor < -1 && data < node.right.data) {
+            System.out.println("--------------------------------");
+            System.out.println("Performing right-left rotation.");
+            System.out.println("--------------------------------");
             node.right = rightRotation(node.right);
             return leftRotation(node);
         }
@@ -118,32 +130,70 @@ public class AVLtree {
     private void removeRec(int data) {
     }
 
-    public void rightRotation(Node node) {
-        Node leftOfRoot = node.left;
+    /*
+                4                          2
+               / \                        / \
+              2   6                      1   4
+             / \               =>       /   / \
+            1   3                     -1   3   6
+           /
+         -1
+         4 = node               | 2 = leftOfRoot
+         6 = node.right         | 4 = leftOfRoot.right (node)
+         2 = node.left          | 1 = leftOfRoot.left
+         1 = leftOfNode.right   | 3 = node.left
+         3 = leftOfNode.left    | 6 = node.right
+    */
+    public Node rightRotation(Node node) {
+        Node leftOfNode = node.left;
+        Node rightOfLeftNode = leftOfNode.right;
 
-        if (leftOfRoot.right == null) {
-            leftOfRoot.right = node;
-        } else if (leftOfRoot.right != null) {
-            node.left = leftOfRoot.right;
-        }
+        leftOfNode.right = node;
+        node.left = rightOfLeftNode;
 
 
-        updateHeight(leftOfRoot);
+        updateHeight(leftOfNode);
         updateHeight(node);
 
-        return leftOfRoot;
+        return leftOfNode;
     }
 
-    public void leftRotation(Node node) {
-        Node leftOfRoot;
-        if (node.left != null) {
-            leftOfRoot = node.left;
-        }
+    /*
+                4                          6
+               / \                        / \
+              2   6                      4   8
+                 / \           =>       / \   \
+                5   8                  2   5   9
+                     \
+                      9
+         4 = node               | 6 = rightOfNode
+         6 = node.right         | 4 = leftOfNode.right (node)
+         2 = node.left          | 8 = leftOfNode.left
+         5 = rightOfNode.left   | 2 = node.left
+         8 = rightOfNode.right  | 5 = node.right
+    */
+    public Node leftRotation(Node node) {
+        Node rightOfNode = node.right;
+        Node leftOfRightNode = rightOfNode.left;
+
+        rightOfNode.left = node;
+        node.right = leftOfRightNode;
+
+        updateHeight(rightOfNode);
+        updateHeight(node);
+
+        return rightOfNode;
     }
 
 
     private void updateHeight(Node node) {
-        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
+        int heightLeft = 0;
+        int heightRight = 0;
+
+        heightLeft = getHeight(node.left);
+        heightRight = getHeight(node.right);
+
+        node.height = 1 + Math.max(heightLeft, heightRight);
     }
 
     private int getHeight(Node node) {
