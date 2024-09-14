@@ -119,10 +119,19 @@ public class AVLtree {
     }
 
     public void rightRotation(Node node) {
-        Node leftOfRoot;
-        if (node.left != null) {
-            leftOfRoot = node.left;
+        Node leftOfRoot = node.left;
+
+        if (leftOfRoot.right == null) {
+            leftOfRoot.right = node;
+        } else if (leftOfRoot.right != null) {
+            node.left = leftOfRoot.right;
         }
+
+
+        updateHeight(leftOfRoot);
+        updateHeight(node);
+
+        return leftOfRoot;
     }
 
     public void leftRotation(Node node) {
