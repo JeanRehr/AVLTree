@@ -1,46 +1,55 @@
 public class Main {
     public static void main(String[] args) {
         AVLtree tree = new AVLtree();
-        /*
-        tree.insert(50);
-        tree.insert(30);
-        tree.insert(40);
-        tree.insert(70);
-        tree.insert(60);
-        tree.insert(80);
-        tree.insert(90);
-        tree.insert(75);
-        tree.insert(25);
-        tree.insert(20);
-        tree.insert(10);
-        tree.insert(5);
-        tree.insert(5);*/
-        tree.insert(3);
-        tree.insert(2);
-        tree.insert(1);
-        tree.insert(4);
-        tree.insert(5);
+        Text text = new Text();
 
-        //System.out.println("insert order: 50, 30, 40, 70, 60, 80, 90, 75, 25, 20, 10, 5");
+        int userInput;
+        short userOpt = 10;
 
+        while (userOpt != 9) {
+			text.options();
 
-        System.out.println("inorder");
-        tree.inorder();
-        System.out.println();
-        
-        System.out.println("postorder");
-        tree.postorder();
-        System.out.println();
+            userOpt = text.getUserOption((short) 9, (short) 0);
 
-        System.out.println("preorder");
-        tree.preorder();
-        System.out.println();
-
-        System.out.println("representation");
-        tree.printTree();
-        System.out.println();
-
-        System.out.println("level: " + tree.getDepth());
-
+            switch (userOpt) {
+            case 1: // Print Tree
+                tree.printTree();
+                break;
+            case 2: // Search
+                System.out.println("Search which number?");
+                userInput = text.getInt();
+                System.out.println(tree.search(userInput));
+                break;
+            case 3: // Insert
+                System.out.println("Insert which number?");
+			    userInput = text.getInt();
+                tree.insert(userInput);
+                tree.printTree();
+                break;
+            case 4: // Remove
+                System.out.println("Remove which number?");
+			    userInput = text.getInt();
+                tree.remove(userInput);
+                tree.printTree();
+                break;
+            case 5: // Preorder
+                tree.preorder();
+                break;
+            case 6: // Postorder
+                tree.postorder();
+                break;
+            case 7: // Inorder
+                tree.inorder();
+                break;
+            case 8: // Help
+                text.help();
+                break;
+            case 9: // Exit
+                break;
+            case 0: // Clear Console
+                text.clearConsole();
+                break;
+            }
+        }
     }
 }
