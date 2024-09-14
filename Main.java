@@ -16,18 +16,18 @@ public class Main {
                 tree.printTree();
                 break;
             case 2: // Search
-                System.out.println("Search which number?");
+                System.out.print("Search which number? ");
                 userInput = text.getInt();
                 System.out.println(tree.search(userInput));
                 break;
             case 3: // Insert
-                System.out.println("Insert which number?");
+                System.out.print("Insert which number? ");
 			    userInput = text.getInt();
                 tree.insert(userInput);
                 tree.printTree();
                 break;
             case 4: // Remove
-                System.out.println("Remove which number?");
+                System.out.print("Remove which number? ");
 			    userInput = text.getInt();
                 tree.remove(userInput);
                 tree.printTree();
