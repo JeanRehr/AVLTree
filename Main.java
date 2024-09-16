@@ -3,13 +3,13 @@ public class Main {
         AVLtree tree = new AVLtree();
         Text text = new Text();
 
-        int userInput;
+        int userInt;
         short userOpt = 10;
 
         while (userOpt != 9) {
 			text.options();
 
-            userOpt = text.getUserOption((short) 9, (short) 0);
+            userOpt = text.getUserOption((short) 11, (short) 0);
 
             switch (userOpt) {
             case 1: // Print Tree
@@ -17,19 +17,21 @@ public class Main {
                 break;
             case 2: // Search
                 System.out.print("Search which number? ");
-                userInput = text.getInt();
-                System.out.println(tree.search(userInput));
+                userInt = text.getInt();
+                System.out.println((tree.search(userInt)) ? "Data found." : "Not found.");
                 break;
             case 3: // Insert
                 System.out.print("Insert which number? ");
-			    userInput = text.getInt();
-                tree.insert(userInput);
+			    userInt = text.getInt();
+                tree.insert(userInt);
+                System.out.println("Tree after operation:");
                 tree.printTree();
                 break;
             case 4: // Remove
                 System.out.print("Remove which number? ");
-			    userInput = text.getInt();
-                tree.remove(userInput);
+			    userInt = text.getInt();
+                tree.remove(userInt);
+                System.out.println("Tree after operation:");
                 tree.printTree();
                 break;
             case 5: // Preorder
@@ -49,6 +51,14 @@ public class Main {
             case 0: // Clear Console
                 text.clearConsole();
                 break;
+            case 11:
+                System.out.println(
+                                    "Minimum: " + tree.getMinimumData() +
+                                    "\nMaximum: " + tree.getMaximumData() +
+                                    "\nSuccessor: " + tree.getSuccessorData() +
+                                    "\nPredecessor: " + tree.getPredecessorData() +
+                                    "\nRoot: " + tree.getRootData()
+                                );
             }
         }
     }
