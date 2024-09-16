@@ -33,13 +33,13 @@ public class AVLtree {
 
         if (data < node.data) {
             // If the data is less than the root's data, go to the left subtree
-            node.left = insertRec(node.left, data, node);
-        } else if (data > node.data) {
+            node.left = insertRec(node.left, data, node); // node is now the parent of the newnode
+        } else if (data > node.data) {                    // as we go down the tree
             // If the data is greater than the root's data, go to the right subtree
-            node.right = insertRec(node.right, data, node); // node is now the parent of the newnode
+            node.right = insertRec(node.right, data, node);
         }
 
-        updateHeight(node);
+        setHeight(node);
         int balanceFactor = getBalanceFactor(node);
 
         // Balancing tree
@@ -116,7 +116,7 @@ public class AVLtree {
             return node;
         }
 
-        updateHeight(node);
+        setHeight(node);
         int balanceFactor = getBalanceFactor(node);
 
         // Balancing tree
@@ -183,8 +183,8 @@ public class AVLtree {
         leftOfNode.parent = node.parent; // the parent of 4 is now the parent of 2
         node.parent = leftOfNode; // parent of 4 turns to 2
 
-        updateHeight(node);
-        updateHeight(leftOfNode);
+        setHeight(node);
+        setHeight(leftOfNode);
 
         return leftOfNode;
     }
@@ -217,8 +217,8 @@ public class AVLtree {
         rightOfNode.parent = node.parent;
         node.parent = rightOfNode;
 
-        updateHeight(node);
-        updateHeight(rightOfNode);
+        setHeight(node);
+        setHeight(rightOfNode);
 
         return rightOfNode;
     }
@@ -239,7 +239,7 @@ public class AVLtree {
     }
 
 
-    private void updateHeight(Node node) {
+    private void    setHeight(Node node) {
         node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
     }
 
@@ -272,42 +272,6 @@ public class AVLtree {
 
     public Node getParent(Node node) {
         return node != null ? node.parent : null;
-    }
-
-    public void inorder() {
-        inorderRec(root);
-    }
-
-    private void inorderRec(Node root) {
-        if (root != null) {
-            inorderRec(root.left);             // Visit left subtree
-            System.out.print(root.data + " "); // Visit root
-            inorderRec(root.right);            // Visit right subtree
-        }
-    }
-
-    public void preorder() {
-        preorderRec(root);
-    }
-
-    private void preorderRec(Node root) {
-        if (root != null) {
-            System.out.print(root.data + " "); // Visit root
-            preorderRec(root.left);            // Visit left subtree
-            preorderRec(root.right);           // Visit right subtree
-        }
-    }
-
-    public void postorder() {
-        postorderRec(root);
-    }
-
-    private void postorderRec(Node root) {
-        if (root != null) {
-            postorderRec(root.left);           // Visit left subtree
-            postorderRec(root.right);          // Visit right subtree
-            System.out.print(root.data + " "); // Visit root
-        }
     }
 
     public void printTree() {
@@ -350,10 +314,6 @@ public class AVLtree {
         } else {
             System.out.println("Tree is empty.");
         }
-    }
-
-    private int getLevel(Node node) {
-        return node.height - 1;
     }
 
     private int getBalanceFactor(Node node) {
@@ -425,50 +385,6 @@ public class AVLtree {
         }
     }
 
-/* successor logic when given node doesn't has a right tree
-        15
-       /  \
-     6     18
-    / \    / \
-   3   7  17  20
-  / \   \
- 2  4   13
-        /
-       9
-
-Start with x = 13.
-
-13 has no right child.
-
-Move up: y = 7 (parent of 13).
-
-13 is the right child of 7.
-Move up: y = 6 (parent of 7).
-
-7 is the right child of 6.
-Move up: y = 15 (parent of 6).
-
-6 is the left child of 15.
-Successor of 13: Node 15.
-
-When Node x Does Not Have a Right Subtree:
-
-Traverse the ancestors until you find one that is not a right child.
- Step-by-step for 13:
- 13 → up to 7 → up to 6 → up to 15 (left child of 15)
- Successor of 13 is 15
-
-Visual Example with Traversing Up:
-Start with:
-    13 (find parent)
--> 7 (13 == parent's right? yes, move up)
--> 6 (7 == parent's right? yes, move up)
--> 15 (6 == parent's left? stop!)
-Successor is 15
-Conclusion
-Right Subtree Absent: Traverse upward using parent pointers until you find an ancestor that is not
-the right child of its parent.
-*/
     public Node successor(Node node) {
         if (node == null) {
             return null;
@@ -544,7 +460,7 @@ the right child of its parent.
         return searchNodeRec(root, data);
     }
 
-    public Node searchNodeRec(Node node, int data) {
+    private Node searchNodeRec(Node node, int data) {
         if (node == null) {
             return null;
         }
@@ -557,6 +473,45 @@ the right child of its parent.
             return searchNodeRec(node.left, data);
         } else {
             return searchNodeRec(node.right, data);
+        }
+    }
+
+    public void preorder() {
+        preorderRec(root);
+        System.out.println("");
+    }
+
+    private void preorderRec(Node root) {
+        if (root != null) {
+            System.out.print(root.data + " "); // Visit root
+            preorderRec(root.left);            // Visit left subtree
+            preorderRec(root.right);           // Visit right subtree
+        }
+    }
+
+    public void postorder() {
+        postorderRec(root);
+        System.out.println("");
+    }
+
+    private void postorderRec(Node root) {
+        if (root != null) {
+            postorderRec(root.left);           // Visit left subtree
+            postorderRec(root.right);          // Visit right subtree
+            System.out.print(root.data + " "); // Visit root
+        }
+    }
+
+    public void inorder() {
+        inorderRec(root);
+        System.out.println("");
+    }
+
+    private void inorderRec(Node root) {
+        if (root != null) {
+            inorderRec(root.left);             // Visit left subtree
+            System.out.print(root.data + " "); // Visit root
+            inorderRec(root.right);            // Visit right subtree
         }
     }
 }
