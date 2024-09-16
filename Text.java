@@ -12,14 +12,15 @@ public class Text {
 
     public void options() {
         System.out.print(
-						"-----------------------------------------------------------\n" +
-						"Options:" +
-						"[1] Print tree.\t[6] Postorder.\n" +
-						"\t[2] Search.\t[7] Inorder.\n" +
-						"\t[3] Insert.\t[8] Help.\n" +
-						"\t[4] Remove.\t[9] Exit.\n" +
-						"\t[5] Preorder.\t[0] Clear console.\n" +
-						"-----------------------------------------------------------\n");
+			"----------------------------------------------------------------------\n" +
+			"Options:" +
+			"[1] Print tree.\t[6] Postorder.\t[10] Print ops based on Root node.\n" +
+			"\t[2] Search.\t[7] Inorder.\t[11] Print ops on a given node.\n" +
+			"\t[3] Insert.\t[8] Help.\t[12] Mass insert in intervals of 10.\n" +
+			"\t[4] Remove.\t[9] Exit.\n" +
+			"\t[5] Preorder.\t[0] Clear screen.\n" +
+			"----------------------------------------------------------------------\n"
+		);
 	}
 
     public int getInt() {
