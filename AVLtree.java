@@ -44,81 +44,27 @@ public class AVLtree {
 
         // Balancing tree
         // Left Left Case
-        /*
-        Condition: The balance factor is greater than 1, indicating a left-heavy tree.
-        Additionally, the newly inserted data is less than the data in the left child of the node,
-        meaning it has been inserted into the left subtree of the left child.
-        Imbalance Type: Left-Left
-        Rotation: Right Rotation
-        Concept: The imbalance is corrected by performing a right rotation at the node. This
-        involves moving the left child up to replace the node, making the node the right child of
-        its previous left child. This rebalances the subtree by shifting the height distribution.
-        
-        */
         if (balanceFactor > 1 && data < node.left.data) {
-            System.out.println("***");
-            System.out.println("Performing right rotation.");
-            System.out.println("***");
+            System.out.println("*** Performing right rotation. ***");
             return rightRotation(node);
         }
 
         // Right Right Case
-        /*
-        Condition: The balance factor is less than -1, indicating a right-heavy tree.
-        Additionally, the newly inserted data is greater than the data in the right child of the
-        node, meaning it has been inserted into the right subtree of the right child.
-        Imbalance Type: Right-Right
-        Rotation: Left Rotation
-        Concept: The imbalance is corrected by performing a left rotation at the node. This
-        involves moving the right child up to replace the node, making the node the left child of
-        its previous right child. This rebalances the subtree by shifting the height distribution.
-        */
         if (balanceFactor < -1 && data > node.right.data) {
-            System.out.println("***");
-            System.out.println("Performing left rotation.");
-            System.out.println("***");
+            System.out.println("*** Performing left rotation. ***");
             return leftRotation(node);
         }
 
         // Left Right Case
-        /*
-        Condition: The balance factor is greater than 1, indicating a left-heavy tree.
-        Additionally, the newly inserted data is greater than the data in the left child of the
-        node, meaning it has been inserted into the right subtree of the left child.
-        Imbalance Type: Left-Right
-        Rotation: Left Rotation followed by Right Rotation
-        Concept: This imbalance is corrected by performing two rotations:
-        Step 1: Perform a left rotation on the left child, transforming the left-right structure
-        into a left-left structure.
-        Step 2: Perform a right rotation on the node itself to balance the newly formed left-left
-        structure.
-        */
         if (balanceFactor > 1 && data > node.left.data) {
-            System.out.println("***");
-            System.out.println("Performing left-right rotation.");
-            System.out.println("***");
+            System.out.println("*** Performing left-right rotation. ***");
             node.left = leftRotation(node.left);
             return rightRotation(node);
         }
 
         // Right Left Case
-        /*
-        Condition: The balance factor is less than -1, indicating a right-heavy tree. Additionally,
-        the newly inserted data is less than the data in the right child of the node, meaning it
-        has been inserted into the left subtree of the right child.
-        Imbalance Type: Right-Left
-        Rotation: Right Rotation followed by Left Rotation
-        Concept: This imbalance is corrected by performing two rotations:
-
-        Step 1: Perform a right rotation on the right child, transforming the right-left structure
-        into a right-right structure.
-        Step 2: Perform a left rotation on the node itself to balance the newly formed right-right
-        structure.
-        */
         if (balanceFactor < -1 && data < node.right.data) {
-            System.out.println("***");
-            System.out.println("Performing right-left rotation.");
-            System.out.println("***");
+            System.out.println("*** Performing right-left rotation. ***");
             node.right = rightRotation(node.right);
             return leftRotation(node);
         }
@@ -137,72 +83,60 @@ public class AVLtree {
             return node;
         }
 
+        if (data < node.data) { // Traverse left in the tree
+            node.left = removeRec(node.left, data);
+        } else if (data > node.data) { // Traverse right in the tree
+            node.right = removeRec(node.right, data);
+        } else { // Node found
+            if (node.left == null || node.right == null) { // Node with only one child
+                Node temp = (node.left != null) ? node.left : node.right;
+
+                if (temp == null) { // No child case
+                    temp = node;
+                    node = null;
+                } else { // One child case
+                    temp.parent = node.parent; // Update parent 
+                    node = temp; // Node to be "deleted" will be equal to either right or left
+                }
+            } else { // Two children deletion
+                Node temp = minimum(node.right); // Get the successor of the deleted node
+                node.data = temp.data; // Assign the data in the temp to the node to be "deleted"
+                node.right = removeRec(node.right, temp.data); // remove the right of the node
+            }                                                  // as it was assigned to node already
+        }
+
         if (node == null) {
             return node;
         }
 
-        if (node.data < data) {
-            node.left = removeRec(node.left, data);
-        } else if (node.data > data) {
-            node.right = removeRec(node.right, data);
-        } else {
-            if (node.left == null) {
-                transplant(node, node.right);
-            } else if (node.right == null) {
-                transplant(node, node.left);
-            } else {
-                Node minimumOfRight = minimum(node.right);
-                if (minimumOfRight.parent != node) {
-                    transplant(minimumOfRight, minimumOfRight.right);
-                    minimumOfRight.right = node.right;
-                    minimumOfRight.right.parent = minimumOfRight;
-                }
-                transplant(node, minimumOfRight);
-                minimumOfRight.left = node.left;
-                minimumOfRight.left.parent = minimumOfRight;
-            }
-        }
-
-        Node x = node.parent; // Check up the tree
-        while (x != null) {
-        updateHeight(x);
-        int balanceFactor = getBalanceFactor(x);
+        updateHeight(node);
+        int balanceFactor = getBalanceFactor(node);
 
         // Balancing tree
         // Left Left Case
-        if (balanceFactor > 1 && getBalanceFactor(x.left) >= 0) {
-            System.out.println("***");
-            System.out.println("Performing right rotation.");
-            System.out.println("***");
-            x = rightRotation(x);
+        if (balanceFactor > 1 && getBalanceFactor(node.left) >= 0) {
+            System.out.println("*** Performing right rotation. ***");
+            return rightRotation(node);
         }
 
         // Right Right Case
-        if (balanceFactor < -1 && getBalanceFactor(x.right) <= 0) {
-            System.out.println("***");
-            System.out.println("Performing left rotation.");
-            System.out.println("***");
-            x = leftRotation(x);
+        if (balanceFactor < -1 && getBalanceFactor(node.right) <= 0) {
+            System.out.println("*** Performing left rotation. ***");
+            return leftRotation(node);
         }
 
         // Left Right Case
-        if (balanceFactor > 1 && getBalanceFactor(x.left) < 0) {
-            System.out.println("***");
-            System.out.println("Performing left-right rotation.");
-            System.out.println("***");
-            x.left = leftRotation(x.left);
-            x = rightRotation(x);
+        if (balanceFactor > 1 && getBalanceFactor(node.left) < 0) {
+            System.out.println("*** Performing left-right rotation. ***");
+            node.left = leftRotation(node.left);
+            return rightRotation(node);
         }
 
         // Right Left Case
-        if (balanceFactor < -1 && getBalanceFactor(x.right) > 0) {
-            System.out.println("***");
-            System.out.println("Performing right-left rotation.");
-            System.out.println("***");
-            x.right = rightRotation(x.right);
-            x = leftRotation(x);
-        }
-            x = x.parent; // Going up
+        if (balanceFactor < -1 && getBalanceFactor(node.right) > 0) {
+            System.out.println("*** Performing right-left rotation. ***");
+            node.right = rightRotation(node.right);
+            return leftRotation(node);
         }
 
         return node;
@@ -276,6 +210,7 @@ public class AVLtree {
         return rightOfNode;
     }
 
+    // not used    
     private void transplant(Node toBeTransplanted, Node newRoot) {
         if (toBeTransplanted.parent == null) {
             this.root = newRoot;
@@ -374,8 +309,10 @@ public class AVLtree {
             }
 
             // Print root data, its height, and balance factor
-            System.out.println(root.data + " Height: " + root.height + " Balance Factor: " + 
-                                getBalanceFactor(root) + " Parent: " + getParentData(root));
+            System.out.println(
+                                root.data + " Height: " + root.height + " Balance Factor: " + 
+                                getBalanceFactor(root) + " Parent: " + getParentData(root)
+                            );
 
             int nextLevel = level + 1;
 
