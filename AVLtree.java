@@ -45,26 +45,32 @@ public class AVLtree {
         // Balancing tree
         // Left Left Case
         if (balanceFactor > 1 && data < node.left.data) {
-            System.out.println("*** Performing right rotation. ***");
+            //System.out.println("*** Performing right rotation on " + node.data + ". ***");
             return rightRotation(node);
         }
 
         // Right Right Case
         if (balanceFactor < -1 && data > node.right.data) {
-            System.out.println("*** Performing left rotation. ***");
+            //System.out.println("*** Performing left rotation on " + node.data + ". ***");
             return leftRotation(node);
         }
 
         // Left Right Case
         if (balanceFactor > 1 && data > node.left.data) {
-            System.out.println("*** Performing left-right rotation. ***");
+            /*System.out.println(
+                "*** Performing left-right rotation on " + node.left.data +
+                " and " + node.data + ". ***"
+            );*/
             node.left = leftRotation(node.left);
             return rightRotation(node);
         }
 
         // Right Left Case
         if (balanceFactor < -1 && data < node.right.data) {
-            System.out.println("*** Performing right-left rotation. ***");
+            /*System.out.println(
+                "*** Performing right-left rotation on " + node.right.data +
+                " and " + node.data + ". ***"
+            );*/
             node.right = rightRotation(node.right);
             return leftRotation(node);
         }
@@ -88,7 +94,7 @@ public class AVLtree {
         } else if (data > node.data) { // Traverse right in the tree
             node.right = removeRec(node.right, data);
         } else { // Node found
-            if (node.left == null || node.right == null) { // Node with only one child
+            if (node.left == null || node.right == null) { // Node with only one or no child
                 Node temp = (node.left != null) ? node.left : node.right;
 
                 if (temp == null) { // No child case
@@ -98,8 +104,9 @@ public class AVLtree {
                     temp.parent = node.parent; // Update parent 
                     node = temp; // Node to be "deleted" will be equal to either right or left
                 }
+
             } else { // Two children deletion
-                Node temp = minimum(node.right); // Get the successor of the deleted node
+                Node temp = minimum(node.right); // The successor on the right of the deleted node
                 node.data = temp.data; // Assign the data in the temp to the node to be "deleted"
                 node.right = removeRec(node.right, temp.data); // remove the right of the node
             }                                                  // as it was assigned to node already
@@ -115,26 +122,32 @@ public class AVLtree {
         // Balancing tree
         // Left Left Case
         if (balanceFactor > 1 && getBalanceFactor(node.left) >= 0) {
-            System.out.println("*** Performing right rotation. ***");
+            System.out.println("*** Performing right rotation on " + node.data + ". ***");
             return rightRotation(node);
         }
 
         // Right Right Case
         if (balanceFactor < -1 && getBalanceFactor(node.right) <= 0) {
-            System.out.println("*** Performing left rotation. ***");
+            System.out.println("*** Performing left rotation on " + node.data + ". ***");
             return leftRotation(node);
         }
 
         // Left Right Case
         if (balanceFactor > 1 && getBalanceFactor(node.left) < 0) {
-            System.out.println("*** Performing left-right rotation. ***");
+            System.out.println(
+                "*** Performing left-right rotation on " + node.left.data +
+                " and " + node.data + ". ***"
+            );
             node.left = leftRotation(node.left);
             return rightRotation(node);
         }
 
         // Right Left Case
         if (balanceFactor < -1 && getBalanceFactor(node.right) > 0) {
-            System.out.println("*** Performing right-left rotation. ***");
+            System.out.println(
+                "*** Performing right-left rotation on " + node.right.data +
+                " and " + node.data + ". ***"
+            );
             node.right = rightRotation(node.right);
             return leftRotation(node);
         }
@@ -310,9 +323,9 @@ public class AVLtree {
 
             // Print root data, its height, and balance factor
             System.out.println(
-                                root.data + " Height: " + root.height + " Balance Factor: " + 
-                                getBalanceFactor(root) + " Parent: " + getParentData(root)
-                            );
+                root.data + " Height: " + root.height + " Balance Factor: " + 
+                getBalanceFactor(root) + " Parent: " + getParentData(root)
+            );
 
             int nextLevel = level + 1;
 
@@ -334,6 +347,8 @@ public class AVLtree {
                 }
                 System.out.println("_");
             }
+        } else {
+            System.out.println("Tree is empty.");
         }
     }
 
@@ -350,11 +365,11 @@ public class AVLtree {
         return getHeight(node.left) - getHeight(node.right);
     }
 
-    public int getMaximumData() { // Based on root
-        if (root == null) {
+    public int getMaximumData(Node node) { // Based on root
+        if (node == null) {
             return 0;
         }
-        Node max = maximum(root);
+        Node max = maximum(node);
         return max.data;
     }
 
@@ -368,11 +383,11 @@ public class AVLtree {
         return node;
     }
 
-    public int getMinimumData() { // Based on root
-        if (root == null) {
+    public int getMinimumData(Node node) { // Based on root
+        if (node == null) {
             return 0;
         }
-        Node min = minimum(root);
+        Node min = minimum(node);
         return min.data;
     }
 
@@ -398,19 +413,19 @@ public class AVLtree {
         }
     }
 
-    public int getSuccessorData() { // Based on root
-        if (root == null) {
+    public int getSuccessorData(Node node) { // Based on root
+        if (node == null) {
             return 0;
         }
-        Node successor = successor(root);
+        Node successor = successor(node);
         if (successor == null) { // Case tree has no right nodes, it will return the parent in the
             return 0;            // called function, if the parent is null a null pointer excep
         } else {                 // will occur without this if
-            return successor.data; 
+            return successor.data;
         }
     }
 
-/*
+/* successor logic when given node doesn't has a right tree
         15
        /  \
      6     18
@@ -454,7 +469,7 @@ Conclusion
 Right Subtree Absent: Traverse upward using parent pointers until you find an ancestor that is not
 the right child of its parent.
 */
-    public Node successor(Node node) { // Based on root
+    public Node successor(Node node) {
         if (node == null) {
             return null;
         }
@@ -471,11 +486,11 @@ the right child of its parent.
         return y;
     }
 
-    public int getPredecessorData() {
-        if (root == null) {
+    public int getPredecessorData(Node node) {  // Based on root
+        if (node == null) {
             return 0;
         }
-        Node predecessor = predecessor(root);
+        Node predecessor = predecessor(node);
         if (predecessor == null) { // Case tree has no left nodes, it will return the parent in the
             return 0;              // called function, if the parent is null a null pointer excep
         } else {                   // will occur without this if
