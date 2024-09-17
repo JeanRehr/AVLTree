@@ -4,7 +4,6 @@ public class Main {
         Text text = new Text();
         int j = 10;
         boolean printBeforeAfter = false;
-
         int userInt;
         short userOpt = 100;
 
@@ -64,33 +63,35 @@ public class Main {
                 text.clearConsole();
                 break;
             case 10:
-                System.out.println(
-                    "Minimum: " + tree.getMinimumData(tree.getRoot()) +
-                    "\nMaximum: " + tree.getMaximumData(tree.getRoot()) +
-                    "\nRoot of the tree: " + tree.getRootData() +
-                    "\nSuccessor: " + tree.getSuccessorData(tree.getRoot()) +
-                    "\nPredecessor: " + tree.getPredecessorData(tree.getRoot())
-                );
-                break;
-            case 11:
-                System.out.print("Operations on which node> ");
+                System.out.print("Info on which node (root is: " + tree.getRootData() + ") > ");
                 userInt = text.getInt();
-                if (tree.searchNode(userInt) != null) {
+                Node subTreeNode = tree.searchNode(userInt);
+                if (subTreeNode != null) {
                     System.out.println(
                         "Minimum of sub-tree: " +
-                        tree.getMinimumData(tree.searchNode(userInt)) +
+                        tree.getMinimumData(subTreeNode) +
                         "\nMaximum of sub-tree: " +
-                        tree.getMaximumData(tree.searchNode(userInt)) +
+                        tree.getMaximumData(subTreeNode) +
                         "\nRoot of the sub-tree: " +
                         userInt +
                         "\nSuccessor of sub-tree: " +
-                        tree.getSuccessorData(tree.searchNode(userInt)) +
+                        tree.getSuccessorData(subTreeNode) +
                         "\nPredecessor of sub-tree: " +
-                        tree.getPredecessorData(tree.searchNode(userInt)) +
+                        tree.getPredecessorData(subTreeNode) +
                         "\nRoot of the entire tree: " +
                         tree.getRootData()
                     );
                 } else { 
+                    System.out.println("Data/sub-tree not found.");
+                }
+                break;
+            case 11:
+                System.out.print("Print from which sub-tree> ");
+                userInt = text.getInt();
+                Node subTree = tree.searchNode(userInt);
+                if (subTree != null) {
+                    tree.printTree(subTree);
+                } else {
                     System.out.println("Data/sub-tree not found.");
                 }
                 break;
@@ -136,15 +137,6 @@ public class Main {
                 tree.printTree(tree.root);
                 break;
             case 14:
-                System.out.print("Print from which sub-tree> ");
-                userInt = text.getInt();
-                if (tree.searchNode(userInt) != null) {
-                    tree.printTree(tree.searchNode(userInt));
-                } else {
-                    System.out.println("Data/sub-tree not found.");
-                }
-                break;
-            case 15:
                 printBeforeAfter = !printBeforeAfter;
                 System.out.println("Print before and after operations: " + printBeforeAfter);
                 break;
