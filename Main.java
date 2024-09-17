@@ -20,12 +20,12 @@ public class Main {
                 tree.printTree(tree.root);
                 break;
             case 2: // Search
-                System.out.print("Search which number? ");
+                System.out.print("Search which number> ");
                 userInt = text.getInt();
                 System.out.println((tree.search(userInt)) ? "Data found." : "Not found.");
                 break;
             case 3: // Insert
-                System.out.print("Insert which number? ");
+                System.out.print("Insert which number> ");
                 userInt = text.getInt();
                 if (printBeforeAfter) {
                     System.out.println("Tree before operation:");
@@ -36,7 +36,7 @@ public class Main {
                 tree.printTree(tree.root);
                 break;
             case 4: // Remove
-                System.out.print("Remove which number? ");
+                System.out.print("Remove which number> ");
                 userInt = text.getInt();
                 if (printBeforeAfter) {
                     System.out.println("Tree before operation:");
@@ -73,7 +73,7 @@ public class Main {
                 );
                 break;
             case 11:
-                System.out.print("Operations on which node? ");
+                System.out.print("Operations on which node> ");
                 userInt = text.getInt();
                 if (tree.searchNode(userInt) != null) {
                     System.out.println(
@@ -95,13 +95,13 @@ public class Main {
                 }
                 break;
             case 12:
-                System.out.print("Size of the array? ");
+                System.out.print("Size of the array> ");
                 userInt = text.getInt();
                 System.out.println("Inserting " + userInt + " numbers in intervals of 10.");
                 System.out.println("Creating numbers.");
                 int numbersForInserting[] = new int[userInt];
                 if (j != 10) {
-                    System.out.print("Press 1 to start assignment from 10. ");
+                    System.out.print("Press 1 to start assignment from 10> ");
                     int reset = text.getInt();
                     if (reset == 1) {
                         j = 10;
@@ -125,7 +125,7 @@ public class Main {
                 tree.printTree(tree.root);
                 break;
             case 13:
-                System.out.print("Delete which sub-tree? ");
+                System.out.print("Delete which sub-tree> ");
                 userInt = text.getInt();
                 if (printBeforeAfter) {
                     System.out.println("Tree before operation:");
@@ -136,7 +136,7 @@ public class Main {
                 tree.printTree(tree.root);
                 break;
             case 14:
-                System.out.print("Print from which sub-tree? ");
+                System.out.print("Print from which sub-tree> ");
                 userInt = text.getInt();
                 if (tree.searchNode(userInt) != null) {
                     tree.printTree(tree.searchNode(userInt));
