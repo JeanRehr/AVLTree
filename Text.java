@@ -2,40 +2,40 @@ import java.util.Scanner;
 public class Text {
     Scanner scanner = new Scanner(System.in);
     public void clearConsole() {
-		/* ANSI CODE */
-		// System.out.println("\033[2J\033[;H"); /* Works but not always */
-		final String ANSI_CLS = "\u001b[2J"; /* Clear screen. */
-		final String ANSI_HOME = "\u001b[H"; /* Cursor to the top right. */
-		System.out.print(ANSI_CLS + ANSI_HOME);
-		System.out.flush();
-	}
+        /* ANSI CODE */
+        // System.out.println("\033[2J\033[;H"); /* Works but not always */
+        final String ANSI_CLS = "\u001b[2J"; /* Clear screen. */
+        final String ANSI_HOME = "\u001b[H"; /* Cursor to the top right. */
+        System.out.print(ANSI_CLS + ANSI_HOME);
+        System.out.flush();
+    }
 
     public void options() {
         System.out.print(
-			"----------------------------------------------------------------------\n" +
-			"Options:" +
-			"[1] Print tree.\t[6] Postorder.\t[10] Print ops based on Root node.\n" +
-			"\t[2] Search.\t[7] Inorder.\t[11] Print ops on a given node.\n" +
-			"\t[3] Insert.\t[8] Help.\t[12] Mass insert in intervals of 10.\n" +
-			"\t[4] Remove.\t[9] Exit.\n" +
-			"\t[5] Preorder.\t[0] Clear screen.\n" +
-			"----------------------------------------------------------------------\n"
-		);
-	}
+            "---------------------------------------------------------------------------------\n" +
+            "Options:" +
+            "[1] Print tree.\t[6] Postorder.\t[10] Print ops based on Root node.  [15]\n" +
+            "\t[2] Search.\t[7] Inorder.\t[11] Print ops on a given node.\n" +
+            "\t[3] Insert.\t[8] Help.\t[12] Mass insert in intervals of 10.\n" +
+            "\t[4] Remove.\t[9] Exit.\t[13] Mass delete a sub-tree.\n" +
+            "\t[5] Preorder.\t[0] Clearscreen.[14] Print from a sub-tree.\n" +
+            "---------------------------------------------------------------------------------\n"
+        );
+    }
 
     public int getInt() {
         while (!scanner.hasNextInt()) {
-    		System.out.println("Invalid number. Try again");
-			scanner.next();
-	  	}
+            System.out.println("Invalid number.");
+            scanner.next();
+        }
         return scanner.nextInt();
     }
 
     public short getShort() {
         while (!scanner.hasNextShort()) {
-    		System.out.println("Invalid number. Try again");
-			scanner.next();
-	  	}
+            System.out.println("Invalid number.");
+            scanner.next();
+        }
         return scanner.nextShort();
     }
 
@@ -43,9 +43,9 @@ public class Text {
         System.out.print("Option> ");
         short userOpt = getShort();
         while (userOpt > high || userOpt < low) {
-            System.out.println("Invalid option. Try again.");
-		    System.out.print("Option> ");
-		    userOpt = getShort();
+            System.out.println("Invalid option.");
+            System.out.print("Option> ");
+            userOpt = getShort();
         }
         return userOpt;
     }
