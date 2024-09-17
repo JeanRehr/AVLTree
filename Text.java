@@ -1,154 +1,147 @@
-public class Main {
-    public static void main(String[] args) {
-        AVLtree tree = new AVLtree();
-        Text text = new Text();
-        int j = 10;
-        boolean printBeforeAfter = false;
+import java.util.Scanner;
+public class Text {
+    Scanner scanner = new Scanner(System.in);
+    public void clearConsole() {
+        /* ANSI CODE */
+        // System.out.println("\033[2J\033[;H"); /* Works but not always */
+        final String ANSI_CLS = "\u001b[2J"; /* Clear screen. */
+        final String ANSI_HOME = "\u001b[H"; /* Cursor to the top right. */
+        System.out.print(ANSI_CLS + ANSI_HOME);
+        System.out.flush();
+    }
 
-        int userInt;
-        short userOpt = 100;
+    public void options() {
+        System.out.print(
+            "---------------------------------------------------------------------------------\n" +
+            "Options:" +
+            "[1] Print tree.\t[6] Postorder.\t[10] Print ops based on Root node.  [15]\n" +
+            "\t[2] Search.\t[7] Inorder.\t[11] Print ops on a given node.\n" +
+            "\t[3] Insert.\t[8] Help.\t[12] Mass insert in intervals of 10.\n" +
+            "\t[4] Remove.\t[9] Exit.\t[13] Mass delete a sub-tree.\n" +
+            "\t[5] Preorder.\t[0] Clearscreen.[14] Print from a sub-tree.\n" +
+            "---------------------------------------------------------------------------------\n"
+        );
+    }
 
-
-
-        while (userOpt != 9) {
-            text.options();
-
-            userOpt = text.getUserOption((short) 15, (short) 0);
-
-            switch (userOpt) {
-            case 1: // Print Tree
-                tree.printTree(tree.root);
-                break;
-            case 2: // Search
-                System.out.print("Search which number> ");
-                userInt = text.getInt();
-                System.out.println((tree.search(userInt)) ? "Data found." : "Not found.");
-                break;
-            case 3: // Insert
-                System.out.print("Insert which number> ");
-                userInt = text.getInt();
-                if (printBeforeAfter) {
-                    System.out.println("Tree before operation:");
-                    tree.printTree(tree.root);
-                }
-                tree.insert(userInt);
-                System.out.println("Tree after operation:");
-                tree.printTree(tree.root);
-                break;
-            case 4: // Remove
-                System.out.print("Remove which number> ");
-                userInt = text.getInt();
-                if (printBeforeAfter) {
-                    System.out.println("Tree before operation:");
-                    tree.printTree(tree.root);
-                }
-                tree.remove(userInt);
-                System.out.println("Tree after operation:");
-                tree.printTree(tree.root);
-                break;
-            case 5: // Preorder
-                tree.preorder();
-                break;
-            case 6: // Postorder
-                tree.postorder();
-                break;
-            case 7: // Inorder
-                tree.inorder();
-                break;
-            case 8: // Help
-                text.help();
-                break;
-            case 9: // Exit
-                break;
-            case 0: // Clear Console
-                text.clearConsole();
-                break;
-            case 10:
-                System.out.println(
-                    "Minimum: " + tree.getMinimumData(tree.getRoot()) +
-                    "\nMaximum: " + tree.getMaximumData(tree.getRoot()) +
-                    "\nRoot of the tree: " + tree.getRootData() +
-                    "\nSuccessor: " + tree.getSuccessorData(tree.getRoot()) +
-                    "\nPredecessor: " + tree.getPredecessorData(tree.getRoot())
-                );
-                break;
-            case 11:
-                System.out.print("Operations on which node> ");
-                userInt = text.getInt();
-                if (tree.searchNode(userInt) != null) {
-                    System.out.println(
-                        "Minimum of sub-tree: " +
-                        tree.getMinimumData(tree.searchNode(userInt)) +
-                        "\nMaximum of sub-tree: " +
-                        tree.getMaximumData(tree.searchNode(userInt)) +
-                        "\nRoot of the sub-tree: " +
-                        userInt +
-                        "\nSuccessor of sub-tree: " +
-                        tree.getSuccessorData(tree.searchNode(userInt)) +
-                        "\nPredecessor of sub-tree: " +
-                        tree.getPredecessorData(tree.searchNode(userInt)) +
-                        "\nRoot of the entire tree: " +
-                        tree.getRootData()
-                    );
-                } else { 
-                    System.out.println("Data/sub-tree not found.");
-                }
-                break;
-            case 12:
-                System.out.print("Size of the array> ");
-                userInt = text.getInt();
-                System.out.println("Inserting " + userInt + " numbers in intervals of 10.");
-                System.out.println("Creating numbers.");
-                int numbersForInserting[] = new int[userInt];
-                if (j != 10) {
-                    System.out.print("Press 1 to start assignment from 10> ");
-                    int reset = text.getInt();
-                    if (reset == 1) {
-                        j = 10;
-                    }
-                }
-                for (int i = 0; i < numbersForInserting.length; i++) {
-                    if (j % 10 == 0) {
-                        numbersForInserting[i] = j;
-                        j += 10;
-                    }
-                }
-                if (printBeforeAfter) {
-                    System.out.println("Tree before operation:");
-                    tree.printTree(tree.root);
-                }
-                System.out.println("Inserting into the tree.");
-                for (int i = 0; i < numbersForInserting.length; i++) {
-                    tree.insert(numbersForInserting[i]);
-                }
-                System.out.println("Tree after operation:");
-                tree.printTree(tree.root);
-                break;
-            case 13:
-                System.out.print("Delete which sub-tree> ");
-                userInt = text.getInt();
-                if (printBeforeAfter) {
-                    System.out.println("Tree before operation:");
-                    tree.printTree(tree.root);
-                }
-                tree.massRemove(userInt);
-                System.out.println("Tree after operation:");
-                tree.printTree(tree.root);
-                break;
-            case 14:
-                System.out.print("Print from which sub-tree> ");
-                userInt = text.getInt();
-                if (tree.searchNode(userInt) != null) {
-                    tree.printTree(tree.searchNode(userInt));
-                } else {
-                    System.out.println("Data/sub-tree not found.");
-                }
-                break;
-            case 15:
-                printBeforeAfter = !printBeforeAfter;
-                System.out.println("Print before and after operations: " + printBeforeAfter);
-                break;
-            }
+    public int getInt() {
+        while (!scanner.hasNextInt()) {
+            System.out.print("Invalid number.\nNumber> ");
+            scanner.next();
         }
+        return scanner.nextInt();
+    }
+
+    public short getShort() {
+        while (!scanner.hasNextShort()) {
+            System.out.print("Invalid number.\nNumber> ");
+            scanner.next();
+        }
+        return scanner.nextShort();
+    }
+
+    public short getUserOption(short high, short low) {
+        System.out.print("Option> ");
+        short userOpt = getShort();
+        while (userOpt > high || userOpt < low) {
+            System.out.print("Invalid option.\nOption> ");
+            userOpt = getShort();
+        }
+        return userOpt;
+    }
+
+    public void help() {
+        System.out.println("AVL Tree implemented in Java, works only with integers.");
     }
 }
+
+/*
+Balance logic:
+Left Left Case
+Condition: The balance factor is greater than 1, indicating a left-heavy tree.
+Additionally, the newly inserted data is less than the data in the left child of the node,
+meaning it has been inserted into the left subtree of the left child.
+Imbalance Type: Left-Left
+Rotation: Right Rotation
+Concept: The imbalance is corrected by performing a right rotation at the node. This
+involves moving the left child up to replace the node, making the node the right child of
+its previous left child. This rebalances the subtree by shifting the height distribution.
+
+Right Right Case
+Condition: The balance factor is less than -1, indicating a right-heavy tree.
+Additionally, the newly inserted data is greater than the data in the right child of the
+node, meaning it has been inserted into the right subtree of the right child.
+Imbalance Type: Right-Right
+Rotation: Left Rotation
+Concept: The imbalance is corrected by performing a left rotation at the node. This
+involves moving the right child up to replace the node, making the node the left child of
+its previous right child. This rebalances the subtree by shifting the height distribution.
+
+Left Right Case
+Condition: The balance factor is greater than 1, indicating a left-heavy tree.
+Additionally, the newly inserted data is greater than the data in the left child of the
+node, meaning it has been inserted into the right subtree of the left child.
+Imbalance Type: Left-Right
+Rotation: Left Rotation followed by Right Rotation
+Concept: This imbalance is corrected by performing two rotations:
+Step 1: Perform a left rotation on the left child, transforming the left-right structure
+into a left-left structure.
+Step 2: Perform a right rotation on the node itself to balance the newly formed left-left
+structure.
+
+Right Left Case
+Condition: The balance factor is less than -1, indicating a right-heavy tree. Additionally,
+the newly inserted data is less than the data in the right child of the node, meaning it
+has been inserted into the left subtree of the right child.
+Imbalance Type: Right-Left
+Rotation: Right Rotation followed by Left Rotation
+Concept: This imbalance is corrected by performing two rotations:
+Step 1: Perform a right rotation on the right child, transforming the right-left structure
+into a right-right structure.
+Step 2: Perform a left rotation on the node itself to balance the newly formed right-right
+structure.
+
+Successor/antecessor logic:
+successor logic when given node doesn't has a right tree
+        15
+       /  \
+     6     18
+    / \    / \
+   3   7  17  20
+  / \   \
+ 2  4   13
+        /
+       9
+
+Start with x = 13.
+
+13 has no right child.
+
+Move up: y = 7 (parent of 13).
+
+13 is the right child of 7.
+Move up: y = 6 (parent of 7).
+
+7 is the right child of 6.
+Move up: y = 15 (parent of 6).
+
+6 is the left child of 15.
+Successor of 13: Node 15.
+
+When Node x Does Not Have a Right Subtree:
+
+Traverse the ancestors until you find one that is not a right child.
+ Step-by-step for 13:
+ 13 → up to 7 → up to 6 → up to 15 (left child of 15)
+ Successor of 13 is 15
+
+Visual Example with Traversing Up:
+Start with:
+    13 (find parent)
+-> 7 (13 == parent's right? yes, move up)
+-> 6 (7 == parent's right? yes, move up)
+-> 15 (6 == parent's left? stop!)
+Successor is 15
+Conclusion
+Right Subtree Absent: Traverse upward using parent pointers until you find an ancestor that is not
+the right child of its parent.
+*/
