@@ -27,15 +27,15 @@ public class AVLtree {
         }
 
         if (search(data)) {
-            System.out.println("Duplicates not allowed.");
+            System.out.println("*** Duplicates not allowed: " + data + ". ***");
             return node;
         }
 
         if (data < node.data) {
-            // If the data is less than the root's data, go to the left subtree
+            // If the data is less than the node's data, go to the left subtree
             node.left = insertRec(node.left, data, node); // node is now the parent of the newnode
         } else if (data > node.data) {                    // as we go down the tree
-            // If the data is greater than the root's data, go to the right subtree
+            // If the data is greater than the node's data, go to the right subtree
             node.right = insertRec(node.right, data, node);
         }
 
@@ -45,32 +45,32 @@ public class AVLtree {
         // Balancing tree
         // Left Left Case
         if (balanceFactor > 1 && data < node.left.data) {
-            //System.out.println("*** Performing right rotation on " + node.data + ". ***");
+            System.out.println("*** Performing right rotation on " + node.data + ". ***");
             return rightRotation(node);
         }
 
         // Right Right Case
         if (balanceFactor < -1 && data > node.right.data) {
-            //System.out.println("*** Performing left rotation on " + node.data + ". ***");
+            System.out.println("*** Performing left rotation on " + node.data + ". ***");
             return leftRotation(node);
         }
 
         // Left Right Case
         if (balanceFactor > 1 && data > node.left.data) {
-            /*System.out.println(
+            System.out.println(
                 "*** Performing left-right rotation on " + node.left.data +
                 " and " + node.data + ". ***"
-            );*/
+            );
             node.left = leftRotation(node.left);
             return rightRotation(node);
         }
 
         // Right Left Case
         if (balanceFactor < -1 && data < node.right.data) {
-            /*System.out.println(
+            System.out.println(
                 "*** Performing right-left rotation on " + node.right.data +
                 " and " + node.data + ". ***"
-            );*/
+            );
             node.right = rightRotation(node.right);
             return leftRotation(node);
         }
@@ -85,7 +85,7 @@ public class AVLtree {
     // Copy
     private Node removeRec(Node node, int data) {
         if (!search(data)) {
-            System.out.println("Data not found.");
+            System.out.println("*** Data not found. ***");
             return node;
         }
 
@@ -112,6 +112,67 @@ public class AVLtree {
             }                                                  // as it was assigned to node already
         }
 
+        if (node == null) {
+            return node;
+        }
+
+        setHeight(node);
+        int balanceFactor = getBalanceFactor(node);
+
+        // Balancing tree
+        // Left Left Case
+        if (balanceFactor > 1 && getBalanceFactor(node.left) >= 0) {
+            System.out.println("*** Performing right rotation on " + node.data + ". ***");
+            return rightRotation(node);
+        }
+
+        // Right Right Case
+        if (balanceFactor < -1 && getBalanceFactor(node.right) <= 0) {
+            System.out.println("*** Performing left rotation on " + node.data + ". ***");
+            return leftRotation(node);
+        }
+
+        // Left Right Case
+        if (balanceFactor > 1 && getBalanceFactor(node.left) < 0) {
+            System.out.println(
+                "*** Performing left-right rotation on " + node.left.data +
+                " and " + node.data + ". ***"
+            );
+            node.left = leftRotation(node.left);
+            return rightRotation(node);
+        }
+
+        // Right Left Case
+        if (balanceFactor < -1 && getBalanceFactor(node.right) > 0) {
+            System.out.println(
+                "*** Performing right-left rotation on " + node.right.data +
+                " and " + node.data + ". ***"
+            );
+            node.right = rightRotation(node.right);
+            return leftRotation(node);
+        }
+
+        return node;
+    }
+    
+    // Remove an entire sub-tree
+    public void massRemove(int data) {
+        root = massRemoveRec(root, data);
+    }
+    public Node massRemoveRec(Node node, int data) {
+        if (!search(data)) {
+            System.out.println("*** Data not found. ***");
+            return node;
+        }
+
+        if (data < node.data) {
+            node.left = massRemoveRec(node.left, data);
+        } else if (data > node.data) {
+            node.right = massRemoveRec(node.right, data);
+        } else { // Node found
+                node = null; // Remove as if they are leaf
+        }
+        
         if (node == null) {
             return node;
         }
@@ -239,7 +300,7 @@ public class AVLtree {
     }
 
 
-    private void    setHeight(Node node) {
+    private void setHeight(Node node) {
         node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
     }
 
@@ -263,39 +324,36 @@ public class AVLtree {
     }
 
     public int getParentData(Node node) {
-        int parentData = 0;
-        if (node.parent != null) {
-            parentData = node.parent.data;
-        }
-        return parentData;
+        return node.parent != null ? node.parent.data : 0;
     }
 
     public Node getParent(Node node) {
         return node != null ? node.parent : null;
     }
 
-    public void printTree() {
-        printTreeRec(root, 0);
+    public void printTree(Node node) {
+        printTreeRec(node, 0);
     }
 
-    private void printTreeRec(Node root, int level) {
-        if (root != null) {
+    private void printTreeRec(Node node, int level) {
+        if (node != null) {
             // Print spaces proportional to the level
             for (int i = 0; i < level; i++) {
                 System.out.print("    ");
             }
 
-            // Print root data, its height, and balance factor
+            // Print node data, its height, balance factor, and parent
             System.out.println(
-                root.data + " Height: " + root.height + " Balance Factor: " + 
-                getBalanceFactor(root) + " Parent: " + getParentData(root)
+                node.data + " Height: " + node.height +
+                " Balance Factor: " + getBalanceFactor(node) +
+                " Parent: " + ((node.parent == null) ? "Null" : getParentData(node))
             );
 
             int nextLevel = level + 1;
 
             // Recursively print left and right subtrees, with increased level
-            if (root.left != null) {
-                printTreeRec(root.left, nextLevel);
+            if (node.left != null) {
+                printTreeRec(node.left, nextLevel);
             } else { // If node.left is  is null, print a _ in the place
                 for (int i = 0; i < nextLevel; i++) {
                     System.out.print("    ");
@@ -303,8 +361,8 @@ public class AVLtree {
                 System.out.println("_");
             }
 
-            if (root.right != null) {
-                printTreeRec(root.right, nextLevel);
+            if (node.right != null) {
+                printTreeRec(node.right, nextLevel);
             } else { // If node.right is  is null, print a _ in the place
                 for (int i = 0; i < nextLevel; i++) {
                     System.out.print("    ");
@@ -325,7 +383,7 @@ public class AVLtree {
         return getHeight(node.left) - getHeight(node.right);
     }
 
-    public int getMaximumData(Node node) { // Based on root
+    public int getMaximumData(Node node) {
         if (node == null) {
             return 0;
         }
@@ -343,7 +401,7 @@ public class AVLtree {
         return node;
     }
 
-    public int getMinimumData(Node node) { // Based on root
+    public int getMinimumData(Node node) {
         if (node == null) {
             return 0;
         }
@@ -373,7 +431,7 @@ public class AVLtree {
         }
     }
 
-    public int getSuccessorData(Node node) { // Based on root
+    public int getSuccessorData(Node node) {
         if (node == null) {
             return 0;
         }
@@ -402,7 +460,7 @@ public class AVLtree {
         return y;
     }
 
-    public int getPredecessorData(Node node) {  // Based on root
+    public int getPredecessorData(Node node) {
         if (node == null) {
             return 0;
         }
@@ -481,11 +539,11 @@ public class AVLtree {
         System.out.println("");
     }
 
-    private void preorderRec(Node root) {
-        if (root != null) {
-            System.out.print(root.data + " "); // Visit root
-            preorderRec(root.left);            // Visit left subtree
-            preorderRec(root.right);           // Visit right subtree
+    private void preorderRec(Node node) {
+        if (node != null) {
+            System.out.print(node.data + " "); // Visit node
+            preorderRec(node.left);            // Visit left subtree
+            preorderRec(node.right);           // Visit right subtree
         }
     }
 
@@ -494,11 +552,11 @@ public class AVLtree {
         System.out.println("");
     }
 
-    private void postorderRec(Node root) {
-        if (root != null) {
-            postorderRec(root.left);           // Visit left subtree
-            postorderRec(root.right);          // Visit right subtree
-            System.out.print(root.data + " "); // Visit root
+    private void postorderRec(Node node) {
+        if (node != null) {
+            postorderRec(node.left);           // Visit left subtree
+            postorderRec(node.right);          // Visit right subtree
+            System.out.print(node.data + " "); // Visit node
         }
     }
 
@@ -507,11 +565,11 @@ public class AVLtree {
         System.out.println("");
     }
 
-    private void inorderRec(Node root) {
-        if (root != null) {
-            inorderRec(root.left);             // Visit left subtree
-            System.out.print(root.data + " "); // Visit root
-            inorderRec(root.right);            // Visit right subtree
+    private void inorderRec(Node node) {
+        if (node != null) {
+            inorderRec(node.left);             // Visit left subtree
+            System.out.print(node.data + " "); // Visit node
+            inorderRec(node.right);            // Visit right subtree
         }
     }
 }
