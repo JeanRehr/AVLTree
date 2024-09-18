@@ -40,42 +40,7 @@ public class AVLtree {
         }
 
         setHeight(node);
-        int balanceFactor = getBalanceFactor(node);
-
-        // Balancing tree
-        // Left Left Case
-        if (balanceFactor > 1 && data < node.left.data) {
-            System.out.println("*** Performing right rotation on " + node.data + ". ***");
-            return rightRotation(node);
-        }
-
-        // Right Right Case
-        if (balanceFactor < -1 && data > node.right.data) {
-            System.out.println("*** Performing left rotation on " + node.data + ". ***");
-            return leftRotation(node);
-        }
-
-        // Left Right Case
-        if (balanceFactor > 1 && data > node.left.data) {
-            System.out.println(
-                "*** Performing left-right rotation on " + node.left.data +
-                " and " + node.data + ". ***"
-            );
-            node.left = leftRotation(node.left);
-            return rightRotation(node);
-        }
-
-        // Right Left Case
-        if (balanceFactor < -1 && data < node.right.data) {
-            System.out.println(
-                "*** Performing right-left rotation on " + node.right.data +
-                " and " + node.data + ". ***"
-            );
-            node.right = rightRotation(node.right);
-            return leftRotation(node);
-        }
-
-        return node;
+        return balance(node);
     }
 
     public void remove(int data) {
@@ -116,42 +81,7 @@ public class AVLtree {
         }
 
         setHeight(node);
-        int balanceFactor = getBalanceFactor(node);
-
-        // Balancing tree
-        // Left Left Case
-        if (balanceFactor > 1 && getBalanceFactor(node.left) >= 0) {
-            System.out.println("*** Performing right rotation on " + node.data + ". ***");
-            return rightRotation(node);
-        }
-
-        // Right Right Case
-        if (balanceFactor < -1 && getBalanceFactor(node.right) <= 0) {
-            System.out.println("*** Performing left rotation on " + node.data + ". ***");
-            return leftRotation(node);
-        }
-
-        // Left Right Case
-        if (balanceFactor > 1 && getBalanceFactor(node.left) < 0) {
-            System.out.println(
-                "*** Performing left-right rotation on " + node.left.data +
-                " and " + node.data + ". ***"
-            );
-            node.left = leftRotation(node.left);
-            return rightRotation(node);
-        }
-
-        // Right Left Case
-        if (balanceFactor < -1 && getBalanceFactor(node.right) > 0) {
-            System.out.println(
-                "*** Performing right-left rotation on " + node.right.data +
-                " and " + node.data + ". ***"
-            );
-            node.right = rightRotation(node.right);
-            return leftRotation(node);
-        }
-
-        return node;
+        return balance(node);
     }
     
     // Remove an entire sub-tree
@@ -178,6 +108,10 @@ public class AVLtree {
         }
         
         setHeight(node);
+        return balance(node);
+    }
+
+    private Node balance(Node node) {
         int balanceFactor = getBalanceFactor(node);
 
         // Balancing tree
