@@ -63,7 +63,10 @@ public class Main {
                 text.clearConsole();
                 break;
             case 10:
-                System.out.print("Info on which node (root is: " + tree.getRootData() + ") > ");
+                System.out.print(
+                    "Info based on which node (root is: " + 
+                    ((tree.getRoot() != null) ? tree.getRootData() : "null") + ")> "
+                );
                 userInt = text.getInt();
                 Node subTreeNode = tree.searchNode(userInt);
                 if (subTreeNode != null) {
@@ -81,7 +84,7 @@ public class Main {
                         "\nRoot of the entire tree: " +
                         tree.getRootData()
                     );
-                } else { 
+                } else {
                     System.out.println("Data/sub-tree not found.");
                 }
                 break;
@@ -96,31 +99,26 @@ public class Main {
                 }
                 break;
             case 12:
-                System.out.print("Size of the array> ");
-                userInt = text.getInt();
-                System.out.println("Inserting " + userInt + " numbers in intervals of 10.");
-                System.out.println("Creating numbers.");
-                int numbersForInserting[] = new int[userInt];
                 if (j != 10) {
                     System.out.print("Press 1 to start assignment from 10> ");
-                    int reset = text.getInt();
-                    if (reset == 1) {
+                    if (text.getInt() == 1) {
                         j = 10;
                     }
                 }
-                for (int i = 0; i < numbersForInserting.length; i++) {
-                    if (j % 10 == 0) {
-                        numbersForInserting[i] = j;
-                        j += 10;
-                    }
-                }
+                System.out.print("Size of the array> ");
+                userInt = text.getInt();
+                int numbersForInserting[] = new int[userInt];
+                System.out.print("Intervals in numbers of> ");
+                int intervals = text.getInt();
+                System.out.println("Inserting " + userInt + " in intervals of " + intervals + ".");
+                System.out.println("Creating and inserting numbers.");
                 if (printBeforeAfter) {
                     System.out.println("Tree before operation:");
                     tree.printTree(tree.root);
                 }
-                System.out.println("Inserting into the tree.");
                 for (int i = 0; i < numbersForInserting.length; i++) {
-                    tree.insert(numbersForInserting[i]);
+                    tree.insert(j);
+                    j += intervals;
                 }
                 System.out.println("Tree after operation:");
                 tree.printTree(tree.root);
@@ -138,7 +136,7 @@ public class Main {
                 break;
             case 14:
                 printBeforeAfter = !printBeforeAfter;
-                System.out.println("Print before and after operations: " + printBeforeAfter);
+                System.out.println("Print before operations: " + printBeforeAfter);
                 break;
             }
         }
