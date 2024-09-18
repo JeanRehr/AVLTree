@@ -89,6 +89,10 @@ public class AVLtree {
             return node;
         }
 
+        if (node == null) {
+            return node;
+        }
+
         if (data < node.data) { // Traverse left in the tree
             node.left = removeRec(node.left, data);
         } else if (data > node.data) { // Traverse right in the tree
@@ -98,7 +102,6 @@ public class AVLtree {
                 Node temp = (node.left != null) ? node.left : node.right;
 
                 if (temp == null) { // No child case
-                    temp = node;
                     node = null;
                 } else { // One child case
                     temp.parent = node.parent; // Update parent 
@@ -108,12 +111,8 @@ public class AVLtree {
             } else { // Two children deletion
                 Node temp = minimum(node.right); // The successor on the right of the deleted node
                 node.data = temp.data; // Assign the data in the temp to the node to be "deleted"
-                node.right = removeRec(node.right, temp.data); // remove the right of the node
-            }                                                  // as it was assigned to node already
-        }
-
-        if (node == null) {
-            return node;
+                node.right = removeRec(node.right, temp.data); // remove the successor of the node
+            }
         }
 
         setHeight(node);
@@ -165,18 +164,19 @@ public class AVLtree {
             return node;
         }
 
+        if (node == null) {
+            return node;
+        }
+
         if (data < node.data) {
             node.left = massRemoveRec(node.left, data);
         } else if (data > node.data) {
             node.right = massRemoveRec(node.right, data);
         } else { // Node found
-                node = null; // Remove as if they are leaf
+                //node = null; // Remove as if they are leaf
+                return null; // returned null is assigned to left or right reference of the parent.
         }
         
-        if (node == null) {
-            return node;
-        }
-
         setHeight(node);
         int balanceFactor = getBalanceFactor(node);
 
@@ -346,7 +346,7 @@ public class AVLtree {
             System.out.println(
                 node.data + " Height: " + node.height +
                 " Balance Factor: " + getBalanceFactor(node) +
-                " Parent: " + ((node.parent == null) ? "Null" : getParentData(node))
+                " Parent: " + ((node.parent == null) ? "null" : getParentData(node))
             );
 
             int nextLevel = level + 1;
