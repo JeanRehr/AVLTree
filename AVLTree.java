@@ -1,27 +1,29 @@
-class Node {
-    int data;
-    int height;
-    Node left;
-    Node right;
-    Node parent;
+import java.util.Optional;
 
-    public Node(int data) {
+class Node<T> {
+    T data;
+    int height;
+    Node<T> left;
+    Node<T> right;
+    Node<T> parent;
+
+    public Node(T data) {
         this.data = data;
         this.height = 1;
     }
 }
 
-public class AVLtree {
-    Node root;  // The root node of the tree
+public class AVLTree<T extends Comparable<T>> {
+    Node<T> root;  // The root node of the tree
 
-    public void insert(int data) {
+    public void insert(T data) {
         root = insertRec(root, data, null);
     }
 
-    private Node insertRec(Node node, int data, Node parent) {
+    private Node<T> insertRec(Node<T> node, T data, Node<T> parent) {
         // If the tree/subtree is empty, create a new node
         if (node == null) {
-            Node newNode = new Node(data);
+            Node<T> newNode = new Node<>(data);
             newNode.parent = parent;
             return newNode;
         }
@@ -31,10 +33,12 @@ public class AVLtree {
             return node;
         }
 
-        if (data < node.data) {
+        int cmp = data.compareTo(node.data);
+
+        if (cmp < 0) {
             // If the data is less than the node's data, go to the left subtree
             node.left = insertRec(node.left, data, node); // node is now the parent of the newnode
-        } else if (data > node.data) {                    // as we go down the tree
+        } else if (cmp > 0) {                             // as we go down the tree
             // If the data is greater than the node's data, go to the right subtree
             node.right = insertRec(node.right, data, node);
         }
@@ -43,12 +47,12 @@ public class AVLtree {
         return balance(node);
     }
 
-    public void remove(int data) {
+    public void remove(T data) {
         root = removeRec(root, data);
     }
 
     // Copy
-    private Node removeRec(Node node, int data) {
+    private Node<T> removeRec(Node<T> node, T data) {
         if (!search(data)) {
             System.out.println("*** Data not found. ***");
             return node;
@@ -58,13 +62,15 @@ public class AVLtree {
             return node;
         }
 
-        if (data < node.data) { // Traverse left in the tree
+        int cmp = data.compareTo(node.data);
+
+        if (cmp < 0) { // Traverse left in the tree
             node.left = removeRec(node.left, data);
-        } else if (data > node.data) { // Traverse right in the tree
+        } else if (cmp > 0) { // Traverse right in the tree
             node.right = removeRec(node.right, data);
         } else { // Node found
             if (node.left == null || node.right == null) { // Node with only one or no child
-                Node temp = (node.left != null) ? node.left : node.right;
+                Node<T> temp = (node.left != null) ? node.left : node.right;
 
                 if (temp == null) { // No child case
                     node = null;
@@ -74,7 +80,7 @@ public class AVLtree {
                 }
 
             } else { // Two children deletion
-                Node temp = minimum(node.right); // The successor on the right of the deleted node
+                Node<T> temp = minimum(node.right); // The successor on the right of the deleted node
                 node.data = temp.data; // Assign the data in the temp to the node to be "deleted"
                 node.right = removeRec(node.right, temp.data); // remove the successor of the node
             }
@@ -85,10 +91,10 @@ public class AVLtree {
     }
     
     // Remove an entire sub-tree
-    public void massRemove(int data) {
+    public void massRemove(T data) {
         root = massRemoveRec(root, data);
     }
-    public Node massRemoveRec(Node node, int data) {
+    public Node<T> massRemoveRec(Node<T> node, T data) {
         if (!search(data)) {
             System.out.println("*** Data not found. ***");
             return node;
@@ -98,9 +104,11 @@ public class AVLtree {
             return node;
         }
 
-        if (data < node.data) {
+        int cmp = data.compareTo(node.data);
+
+        if (cmp < 0) {
             node.left = massRemoveRec(node.left, data);
-        } else if (data > node.data) {
+        } else if (cmp > 0) {
             node.right = massRemoveRec(node.right, data);
         } else { // Node found
                 //node = null; // Remove as if they are leaf
@@ -111,7 +119,7 @@ public class AVLtree {
         return balance(node);
     }
 
-    private Node balance(Node node) {
+    private Node<T> balance(Node<T> node) {
         int balanceFactor = getBalanceFactor(node);
 
         // Balancing tree
@@ -146,7 +154,6 @@ public class AVLtree {
             node.right = rightRotation(node.right);
             return leftRotation(node);
         }
-
         return node;
     }
 
@@ -164,9 +171,9 @@ public class AVLtree {
          1 = leftOfNode.right   | 3 = node.left
          3 = leftOfNode.left    | 6 = node.right
     */
-    private Node rightRotation(Node node) { // 4 where imbalance happens
-        Node leftOfNode = node.left; // 2 the new root of subtree
-        Node rightOfLeftNode = leftOfNode.right; // 3 right of the left of node
+    private Node<T> rightRotation(Node<T> node) { // 4 where imbalance happens
+        Node<T> leftOfNode = node.left; // 2 the new root of subtree
+        Node<T> rightOfLeftNode = leftOfNode.right; // 3 right of the left of node
 
         leftOfNode.right = node; // 4 goes to the left of 2
         node.left = rightOfLeftNode; // 3 goes to the left of 4
@@ -198,9 +205,9 @@ public class AVLtree {
          5 = rightOfNode.left   | 2 = node.left
          8 = rightOfNode.right  | 5 = node.right
     */
-    private Node leftRotation(Node node) {
-        Node rightOfNode = node.right;
-        Node leftOfRightNode = rightOfNode.left;
+    private Node<T> leftRotation(Node<T> node) {
+        Node<T> rightOfNode = node.right;
+        Node<T> leftOfRightNode = rightOfNode.left;
 
         rightOfNode.left = node;
         node.right = leftOfRightNode;
@@ -219,7 +226,7 @@ public class AVLtree {
     }
 
     // not used    
-    private void transplant(Node toBeTransplanted, Node newRoot) {
+    private void transplant(Node<T> toBeTransplanted, Node<T> newRoot) {
         if (toBeTransplanted.parent == null) {
             this.root = newRoot;
         } else if (toBeTransplanted == toBeTransplanted.parent.left) {
@@ -234,11 +241,15 @@ public class AVLtree {
     }
 
 
-    private void setHeight(Node node) {
+    private void setHeight(Node<T> node) {
+        if (node == null) {
+            return;
+        }
+
         node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
     }
 
-    private int getHeight(Node node) {
+    private int getHeight(Node<T> node) {
         if (node == null) {
             return 0;
         }
@@ -246,30 +257,30 @@ public class AVLtree {
         return node.height;
     }
 
-    public int getRootData() {
+    public Optional<T> getRootData() {
         if (this.root == null) {
-            return 0;
+            return Optional.empty();
         }
-        return this.root.data;
+        return Optional.of(this.root.data);
     }
 
-    public Node getRoot() {
+    public Node<T> getRoot() {
         return this.root;
     }
 
-    public int getParentData(Node node) {
-        return node.parent != null ? node.parent.data : 0;
+    public Optional<T> getParentData(Node<T> node) {
+        return node.parent != null ? Optional.of(node.parent.data) : Optional.empty();
     }
 
-    public Node getParent(Node node) {
+    public Node<T> getParent(Node<T> node) {
         return node != null ? node.parent : null;
     }
 
-    public void printTree(Node node) {
+    public void printTree(Node<T> node) {
         printTreeRec(node, 0);
     }
 
-    private void printTreeRec(Node node, int level) {
+    private void printTreeRec(Node<T> node, int level) {
         if (node != null) {
             // Print spaces proportional to the level
             for (int i = 0; i < level; i++) {
@@ -308,7 +319,7 @@ public class AVLtree {
         }
     }
 
-    private int getBalanceFactor(Node node) {
+    private int getBalanceFactor(Node<T> node) {
         if (node == null) {
             return 0;
         }
@@ -317,15 +328,15 @@ public class AVLtree {
         return getHeight(node.left) - getHeight(node.right);
     }
 
-    public int getMaximumData(Node node) {
+    public Optional<T> getMaximumData(Node<T> node) {
         if (node == null) {
-            return 0;
+            return Optional.empty();
         }
-        Node max = maximum(node);
-        return max.data;
+        Node<T> max = maximum(node);
+        return Optional.of(max.data);
     }
 
-    public Node maximum(Node node) {
+    public Node<T> maximum(Node<T> node) {
         if (node == null) {
             return null;
         }
@@ -335,15 +346,15 @@ public class AVLtree {
         return node;
     }
 
-    public int getMinimumData(Node node) {
+    public Optional<T> getMinimumData(Node<T> node) {
         if (node == null) {
-            return 0;
+            return Optional.empty();
         }
-        Node min = minimum(node);
-        return min.data;
+        Node<T> min = minimum(node);
+        return Optional.of(min.data);
     }
 
-    public Node minimum(Node node) {
+    public Node<T> minimum(Node<T> node) {
         if (node == null) {
             return null;
         }
@@ -354,7 +365,7 @@ public class AVLtree {
     }
 
     // Just testing
-    public Node minimumRec(Node node) {
+    public Node<T> minimumRec(Node<T> node) {
         if (node == null) {
             return null;
         }
@@ -365,19 +376,19 @@ public class AVLtree {
         }
     }
 
-    public int getSuccessorData(Node node) {
+    public Optional<T> getSuccessorData(Node<T> node) {
         if (node == null) {
-            return 0;
+            return Optional.empty();
         }
-        Node successor = successor(node);
+        Node<T> successor = successor(node);
         if (successor == null) { // Case tree has no right nodes, it will return the parent in the
-            return 0;            // called function, if the parent is null a null pointer excep
+            return Optional.empty(); // called function, if the parent is null a null pointer excep
         } else {                 // will occur without this if
-            return successor.data;
+            return Optional.of(successor.data);
         }
     }
 
-    public Node successor(Node node) {
+    public Node<T> successor(Node<T> node) {
         if (node == null) {
             return null;
         }
@@ -386,7 +397,7 @@ public class AVLtree {
             return minimum(node.right);
         }
 
-        Node y = node.parent;
+        Node<T> y = node.parent;
         while (y != null && node == y.right) {
             node = y;
             y = y.parent;
@@ -394,19 +405,19 @@ public class AVLtree {
         return y;
     }
 
-    public int getPredecessorData(Node node) {
+    public Optional<T> getPredecessorData(Node<T> node) {
         if (node == null) {
-            return 0;
+            return Optional.empty();
         }
-        Node predecessor = predecessor(node);
+        Node<T> predecessor = predecessor(node);
         if (predecessor == null) { // Case tree has no left nodes, it will return the parent in the
-            return 0;              // called function, if the parent is null a null pointer excep
+            return Optional.empty();              // called function, if the parent is null a null pointer excep
         } else {                   // will occur without this if
-            return predecessor.data; 
+            return Optional.of(predecessor.data); 
         }
     }
 
-    public Node predecessor(Node node) {
+    public Node<T> predecessor(Node<T> node) {
         if (node == null) {
             return null;
         }
@@ -415,24 +426,24 @@ public class AVLtree {
             return maximum(node.left);
         }
 
-        Node y = node.parent;
-        while (y != null && node == y.left) {
+        Node<T> y = node.parent;
+        while (y != null && node == node.left) {
             node = y;
             y = y.parent;
         }
         return y;
     }
 
-    public boolean search(int data) {
+    public boolean search(T data) {
         return searchRec(root, data);
     }
 
-    private boolean searchRec(Node node, int data) {
+    private boolean searchRec(Node<T> node, T data) {
         if (node == null) {
             return false;
         }
 
-        if (node.data == data) {
+        if (node.data.compareTo(data) == 0) {
             return true;
         }
 
@@ -448,20 +459,20 @@ public class AVLtree {
 
     // Search algo returning the node to use in other functions in middle of tree, like find the 
     // minimum of a sub-tree.
-    public Node searchNode(int data) {
+    public Node<T> searchNode(T data) {
         return searchNodeRec(root, data);
     }
 
-    private Node searchNodeRec(Node node, int data) {
+    private Node<T> searchNodeRec(Node<T> node, T data) {
         if (node == null) {
             return null;
         }
 
-        if (node.data == data) {
+        if (node.data.compareTo(data) == 0) {
             return node;
         }
 
-        if (data < node.data) {
+        if (data.compareTo(node.data) < 0) {
             return searchNodeRec(node.left, data);
         } else {
             return searchNodeRec(node.right, data);
@@ -473,7 +484,7 @@ public class AVLtree {
         System.out.println("");
     }
 
-    private void preorderRec(Node node) {
+    private void preorderRec(Node<T> node) {
         if (node != null) {
             System.out.print(node.data + " "); // Visit node
             preorderRec(node.left);            // Visit left subtree
@@ -486,7 +497,7 @@ public class AVLtree {
         System.out.println("");
     }
 
-    private void postorderRec(Node node) {
+    private void postorderRec(Node<T> node) {
         if (node != null) {
             postorderRec(node.left);           // Visit left subtree
             postorderRec(node.right);          // Visit right subtree
@@ -499,7 +510,7 @@ public class AVLtree {
         System.out.println("");
     }
 
-    private void inorderRec(Node node) {
+    private void inorderRec(Node<T> node) {
         if (node != null) {
             inorderRec(node.left);             // Visit left subtree
             System.out.print(node.data + " "); // Visit node
