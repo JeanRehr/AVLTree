@@ -1,29 +1,27 @@
-import java.util.Optional;
-
-class Node<T> {
-    T data;
+class Node {
+    int data;
     int height;
-    Node<T> left;
-    Node<T> right;
-    Node<T> parent;
+    Node left;
+    Node right;
+    Node parent;
 
-    public Node(T data) {
+    public Node(int data) {
         this.data = data;
         this.height = 1;
     }
 }
 
-public class AVLTree<T extends Comparable<T>> {
-    Node<T> root;  // The root node of the tree
+public class AVLTree {
+    Node root;  // The root node of the tree
 
-    public void insert(T data) {
+    public void insert(int data) {
         root = insertRec(root, data, null);
     }
 
-    private Node<T> insertRec(Node<T> node, T data, Node<T> parent) {
+    private Node insertRec(Node node, int data, Node parent) {
         // If the tree/subtree is empty, create a new node
         if (node == null) {
-            Node<T> newNode = new Node<>(data);
+            Node newNode = new Node(data);
             newNode.parent = parent;
             return newNode;
         }
@@ -33,12 +31,10 @@ public class AVLTree<T extends Comparable<T>> {
             return node;
         }
 
-        int cmp = data.compareTo(node.data);
-
-        if (cmp < 0) {
+        if (data < node.data) {
             // If the data is less than the node's data, go to the left subtree
             node.left = insertRec(node.left, data, node); // node is now the parent of the newnode
-        } else if (cmp > 0) {                             // as we go down the tree
+        } else if (data > node.data) {                    // as we go down the tree
             // If the data is greater than the node's data, go to the right subtree
             node.right = insertRec(node.right, data, node);
         }
@@ -47,12 +43,12 @@ public class AVLTree<T extends Comparable<T>> {
         return balance(node);
     }
 
-    public void remove(T data) {
+    public void remove(int data) {
         root = removeRec(root, data);
     }
 
     // Copy
-    private Node<T> removeRec(Node<T> node, T data) {
+    private Node removeRec(Node node, int data) {
         if (!search(data)) {
             System.out.println("*** Data not found. ***");
             return node;
@@ -62,15 +58,13 @@ public class AVLTree<T extends Comparable<T>> {
             return node;
         }
 
-        int cmp = data.compareTo(node.data);
-
-        if (cmp < 0) { // Traverse left in the tree
+        if (data < node.data) { // Traverse left in the tree
             node.left = removeRec(node.left, data);
-        } else if (cmp > 0) { // Traverse right in the tree
+        } else if (data > node.data) { // Traverse right in the tree
             node.right = removeRec(node.right, data);
         } else { // Node found
             if (node.left == null || node.right == null) { // Node with only one or no child
-                Node<T> temp = (node.left != null) ? node.left : node.right;
+                Node temp = (node.left != null) ? node.left : node.right;
 
                 if (temp == null) { // No child case
                     node = null;
@@ -80,7 +74,7 @@ public class AVLTree<T extends Comparable<T>> {
                 }
 
             } else { // Two children deletion
-                Node<T> temp = minimum(node.right); // The successor on the right of the deleted node
+                Node temp = minimum(node.right); // The successor on the right of the deleted node
                 node.data = temp.data; // Assign the data in the temp to the node to be "deleted"
                 node.right = removeRec(node.right, temp.data); // remove the successor of the node
             }
@@ -91,10 +85,10 @@ public class AVLTree<T extends Comparable<T>> {
     }
     
     // Remove an entire sub-tree
-    public void massRemove(T data) {
+    public void massRemove(int data) {
         root = massRemoveRec(root, data);
     }
-    public Node<T> massRemoveRec(Node<T> node, T data) {
+    public Node massRemoveRec(Node node, int data) {
         if (!search(data)) {
             System.out.println("*** Data not found. ***");
             return node;
@@ -104,11 +98,9 @@ public class AVLTree<T extends Comparable<T>> {
             return node;
         }
 
-        int cmp = data.compareTo(node.data);
-
-        if (cmp < 0) {
+        if (data < node.data) {
             node.left = massRemoveRec(node.left, data);
-        } else if (cmp > 0) {
+        } else if (data > node.data) {
             node.right = massRemoveRec(node.right, data);
         } else { // Node found
                 //node = null; // Remove as if they are leaf
@@ -119,7 +111,7 @@ public class AVLTree<T extends Comparable<T>> {
         return balance(node);
     }
 
-    private Node<T> balance(Node<T> node) {
+    private Node balance(Node node) {
         int balanceFactor = getBalanceFactor(node);
 
         // Balancing tree
@@ -154,6 +146,7 @@ public class AVLTree<T extends Comparable<T>> {
             node.right = rightRotation(node.right);
             return leftRotation(node);
         }
+
         return node;
     }
 
@@ -171,9 +164,9 @@ public class AVLTree<T extends Comparable<T>> {
          1 = leftOfNode.right   | 3 = node.left
          3 = leftOfNode.left    | 6 = node.right
     */
-    private Node<T> rightRotation(Node<T> node) { // 4 where imbalance happens
-        Node<T> leftOfNode = node.left; // 2 the new root of subtree
-        Node<T> rightOfLeftNode = leftOfNode.right; // 3 right of the left of node
+    private Node rightRotation(Node node) { // 4 where imbalance happens
+        Node leftOfNode = node.left; // 2 the new root of subtree
+        Node rightOfLeftNode = leftOfNode.right; // 3 right of the left of node
 
         leftOfNode.right = node; // 4 goes to the left of 2
         node.left = rightOfLeftNode; // 3 goes to the left of 4
@@ -205,9 +198,9 @@ public class AVLTree<T extends Comparable<T>> {
          5 = rightOfNode.left   | 2 = node.left
          8 = rightOfNode.right  | 5 = node.right
     */
-    private Node<T> leftRotation(Node<T> node) {
-        Node<T> rightOfNode = node.right;
-        Node<T> leftOfRightNode = rightOfNode.left;
+    private Node leftRotation(Node node) {
+        Node rightOfNode = node.right;
+        Node leftOfRightNode = rightOfNode.left;
 
         rightOfNode.left = node;
         node.right = leftOfRightNode;
@@ -226,7 +219,7 @@ public class AVLTree<T extends Comparable<T>> {
     }
 
     // not used    
-    private void transplant(Node<T> toBeTransplanted, Node<T> newRoot) {
+    private void transplant(Node toBeTransplanted, Node newRoot) {
         if (toBeTransplanted.parent == null) {
             this.root = newRoot;
         } else if (toBeTransplanted == toBeTransplanted.parent.left) {
@@ -241,7 +234,7 @@ public class AVLTree<T extends Comparable<T>> {
     }
 
 
-    private void setHeight(Node<T> node) {
+    private void setHeight(Node node) {
         if (node == null) {
             return;
         }
@@ -249,7 +242,7 @@ public class AVLTree<T extends Comparable<T>> {
         node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
     }
 
-    private int getHeight(Node<T> node) {
+    private int getHeight(Node node) {
         if (node == null) {
             return 0;
         }
@@ -257,30 +250,30 @@ public class AVLTree<T extends Comparable<T>> {
         return node.height;
     }
 
-    public Optional<T> getRootData() {
+    public int getRootData() {
         if (this.root == null) {
-            return Optional.empty();
+            return 0;
         }
-        return Optional.of(this.root.data);
+        return this.root.data;
     }
 
-    public Node<T> getRoot() {
+    public Node getRoot() {
         return this.root;
     }
 
-    public Optional<T> getParentData(Node<T> node) {
-        return node.parent != null ? Optional.of(node.parent.data) : Optional.empty();
+    public int getParentData(Node node) {
+        return node.parent != null ? node.parent.data : 0;
     }
 
-    public Node<T> getParent(Node<T> node) {
+    public Node getParent(Node node) {
         return node != null ? node.parent : null;
     }
 
-    public void printTree(Node<T> node) {
+    public void printTree(Node node) {
         printTreeRec(node, 0);
     }
 
-    private void printTreeRec(Node<T> node, int level) {
+    private void printTreeRec(Node node, int level) {
         if (node != null) {
             // Print spaces proportional to the level
             for (int i = 0; i < level; i++) {
@@ -319,7 +312,7 @@ public class AVLTree<T extends Comparable<T>> {
         }
     }
 
-    private int getBalanceFactor(Node<T> node) {
+    private int getBalanceFactor(Node node) {
         if (node == null) {
             return 0;
         }
@@ -328,15 +321,15 @@ public class AVLTree<T extends Comparable<T>> {
         return getHeight(node.left) - getHeight(node.right);
     }
 
-    public Optional<T> getMaximumData(Node<T> node) {
+    public int getMaximumData(Node node) {
         if (node == null) {
-            return Optional.empty();
+            return 0;
         }
-        Node<T> max = maximum(node);
-        return Optional.of(max.data);
+        Node max = maximum(node);
+        return max.data;
     }
 
-    public Node<T> maximum(Node<T> node) {
+    public Node maximum(Node node) {
         if (node == null) {
             return null;
         }
@@ -346,15 +339,15 @@ public class AVLTree<T extends Comparable<T>> {
         return node;
     }
 
-    public Optional<T> getMinimumData(Node<T> node) {
+    public int getMinimumData(Node node) {
         if (node == null) {
-            return Optional.empty();
+            return 0;
         }
-        Node<T> min = minimum(node);
-        return Optional.of(min.data);
+        Node min = minimum(node);
+        return min.data;
     }
 
-    public Node<T> minimum(Node<T> node) {
+    public Node minimum(Node node) {
         if (node == null) {
             return null;
         }
@@ -365,7 +358,7 @@ public class AVLTree<T extends Comparable<T>> {
     }
 
     // Just testing
-    public Node<T> minimumRec(Node<T> node) {
+    public Node minimumRec(Node node) {
         if (node == null) {
             return null;
         }
@@ -376,19 +369,19 @@ public class AVLTree<T extends Comparable<T>> {
         }
     }
 
-    public Optional<T> getSuccessorData(Node<T> node) {
+    public int getSuccessorData(Node node) {
         if (node == null) {
-            return Optional.empty();
+            return 0;
         }
-        Node<T> successor = successor(node);
+        Node successor = successor(node);
         if (successor == null) { // Case tree has no right nodes, it will return the parent in the
-            return Optional.empty(); // called function, if the parent is null a null pointer excep
+            return 0;            // called function, if the parent is null a null pointer excep
         } else {                 // will occur without this if
-            return Optional.of(successor.data);
+            return successor.data;
         }
     }
 
-    public Node<T> successor(Node<T> node) {
+    public Node successor(Node node) {
         if (node == null) {
             return null;
         }
@@ -397,7 +390,7 @@ public class AVLTree<T extends Comparable<T>> {
             return minimum(node.right);
         }
 
-        Node<T> y = node.parent;
+        Node y = node.parent;
         while (y != null && node == y.right) {
             node = y;
             y = y.parent;
@@ -405,19 +398,19 @@ public class AVLTree<T extends Comparable<T>> {
         return y;
     }
 
-    public Optional<T> getPredecessorData(Node<T> node) {
+    public int getPredecessorData(Node node) {
         if (node == null) {
-            return Optional.empty();
+            return 0;
         }
-        Node<T> predecessor = predecessor(node);
+        Node predecessor = predecessor(node);
         if (predecessor == null) { // Case tree has no left nodes, it will return the parent in the
-            return Optional.empty();              // called function, if the parent is null a null pointer excep
+            return 0;              // called function, if the parent is null a null pointer excep
         } else {                   // will occur without this if
-            return Optional.of(predecessor.data); 
+            return predecessor.data; 
         }
     }
 
-    public Node<T> predecessor(Node<T> node) {
+    public Node predecessor(Node node) {
         if (node == null) {
             return null;
         }
@@ -426,24 +419,24 @@ public class AVLTree<T extends Comparable<T>> {
             return maximum(node.left);
         }
 
-        Node<T> y = node.parent;
-        while (y != null && node == node.left) {
+        Node y = node.parent;
+        while (y != null && node == y.left) {
             node = y;
             y = y.parent;
         }
         return y;
     }
 
-    public boolean search(T data) {
+    public boolean search(int data) {
         return searchRec(root, data);
     }
 
-    private boolean searchRec(Node<T> node, T data) {
+    private boolean searchRec(Node node, int data) {
         if (node == null) {
             return false;
         }
 
-        if (node.data.compareTo(data) == 0) {
+        if (node.data == data) {
             return true;
         }
 
@@ -459,20 +452,20 @@ public class AVLTree<T extends Comparable<T>> {
 
     // Search algo returning the node to use in other functions in middle of tree, like find the 
     // minimum of a sub-tree.
-    public Node<T> searchNode(T data) {
+    public Node searchNode(int data) {
         return searchNodeRec(root, data);
     }
 
-    private Node<T> searchNodeRec(Node<T> node, T data) {
+    private Node searchNodeRec(Node node, int data) {
         if (node == null) {
             return null;
         }
 
-        if (node.data.compareTo(data) == 0) {
+        if (node.data == data) {
             return node;
         }
 
-        if (data.compareTo(node.data) < 0) {
+        if (data < node.data) {
             return searchNodeRec(node.left, data);
         } else {
             return searchNodeRec(node.right, data);
@@ -484,7 +477,7 @@ public class AVLTree<T extends Comparable<T>> {
         System.out.println("");
     }
 
-    private void preorderRec(Node<T> node) {
+    private void preorderRec(Node node) {
         if (node != null) {
             System.out.print(node.data + " "); // Visit node
             preorderRec(node.left);            // Visit left subtree
@@ -497,7 +490,7 @@ public class AVLTree<T extends Comparable<T>> {
         System.out.println("");
     }
 
-    private void postorderRec(Node<T> node) {
+    private void postorderRec(Node node) {
         if (node != null) {
             postorderRec(node.left);           // Visit left subtree
             postorderRec(node.right);          // Visit right subtree
@@ -510,7 +503,7 @@ public class AVLTree<T extends Comparable<T>> {
         System.out.println("");
     }
 
-    private void inorderRec(Node<T> node) {
+    private void inorderRec(Node node) {
         if (node != null) {
             inorderRec(node.left);             // Visit left subtree
             System.out.print(node.data + " "); // Visit node
