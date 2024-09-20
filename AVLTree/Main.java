@@ -1,8 +1,8 @@
 public class Main {
     public static void main(String[] args) {
-        AVLtree tree = new AVLtree();
+        AVLTree tree = new AVLTree();
         Text text = new Text();
-        int j = 10;
+        int j = 0;
         boolean printBeforeAfter = false;
         int userInt;
         short userOpt = 100;
@@ -100,9 +100,10 @@ public class Main {
                 break;
             case 12:
                 if (j != 10) {
-                    System.out.print("Press 1 to start assignment from 10> ");
-                    if (text.getInt() == 1) {
-                        j = 10;
+                    System.out.print("Press 1 to start assignment from 0> ");
+                    int resetJ = text.getInt();
+                    if (resetJ == 1) {
+                        j = 0;
                     }
                 }
                 System.out.print("Size of the array> ");
