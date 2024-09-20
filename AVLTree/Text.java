@@ -16,11 +16,31 @@ public class Text {
             "Options:" +
             "[1] Print tree.\t[6] Postorder.\t[10] Info based on a node.\n" +
             "\t[2] Search.\t[7] Inorder.\t[11] Print a sub-tree.\n" +
-            "\t[3] Insert.\t[8] Help.\t[12] Mass insert in intervals.\n" +
+            "\t[3] Insert.\t[8] Help.\t[12] Mass insert.\n" +
             "\t[4] Remove.\t[9] Exit.\t[13] Mass delete a sub-tree.\n" +
             "\t[5] Preorder.\t[0] Clearscreen.[14] Print before operations.\n" +
             "---------------------------------------------------------------------------------\n"
         );
+    }
+
+    public <T> T parseValue(String input, Class<T> type) {
+        try {
+            if (type == Integer.class) {
+                return type.cast(Integer.parseInt(input));
+            } else if (type == String.class) {
+                return type.cast(input);
+            } else if (type == Character.class) {
+                return type.cast(input.charAt(0));
+            } else if (type == Double.class) {
+                return type.cast(Double.parseDouble(input));
+            } else {
+                System.out.println("Type not available.");
+                return null;
+            }
+        } catch (Exception e) {
+            System.out.println("Not able to parse input.");
+            return null;
+        }
     }
 
     public int getInt() {
