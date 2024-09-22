@@ -242,7 +242,6 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
         }
     }
 
-
     private void setHeight(Node<T> node) {
         if (node == null) {
             return;
@@ -328,6 +327,17 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
 
         // return node == null ? 0 : getHeight(node.left) - getHeight(node.right);
         return getHeight(node.left) - getHeight(node.right);
+    }
+    
+    public int totalNodes(Node<T> node) {
+        if (node == null) {
+            return 0;
+        }
+
+        int left = totalNodes(node.left);
+        int right = totalNodes(node.right);
+        
+        return 1 + left + right;
     }
 
     public Optional<T> getMaximumData(Node<T> node) {
@@ -505,6 +515,7 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
             return null;
         }
         String nodeData = (String) node.data;
+        nodeData = nodeData.toLowerCase();
         int lengthOfData = data.length();
         String nodeDataSubstring = node.data.substring(0, lengthOfData);
         if (nodeData.startsWith(data)) {
@@ -601,6 +612,38 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
             inorderRec(node.left);             // Visit left subtree
             System.out.print(node.data + " "); // Visit node
             inorderRec(node.right);            // Visit right subtree
+        }
+    }
+
+    public void printParentData(Node<T> node) {
+        if (node.parent == null) {
+            System.out.print("");
+        } else {
+            System.out.print(node.parent.data);    
+        }
+    }
+
+    public void printLeftData(Node<T> node) {
+        if (node.left == null) {
+            System.out.print("");
+        } else {
+            System.out.print(node.left.data);
+        }
+    }
+
+    public void printRightData(Node<T> node) {
+        if (node.right == null) {
+            System.out.print("");
+        } else {
+            System.out.print(node.right.data);
+        }
+    }
+
+    public void printCurrentData(Node<T> node) {
+        if (node == null) {
+            System.out.print("");
+        } else {
+            System.out.print(node.data);
         }
     }
 }
