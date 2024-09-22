@@ -1,4 +1,6 @@
 import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 class Node<T> {
     T data;
@@ -125,32 +127,32 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
         // Balancing tree
         // Left Left Case
         if (balanceFactor > 1 && getBalanceFactor(node.left) >= 0) {
-            System.out.println("*** Performing right rotation on " + node.data + ". ***");
+            //System.out.println("*** Performing right rotation on " + node.data + ". ***");
             return rightRotation(node);
         }
 
         // Right Right Case
         if (balanceFactor < -1 && getBalanceFactor(node.right) <= 0) {
-            System.out.println("*** Performing left rotation on " + node.data + ". ***");
+            //System.out.println("*** Performing left rotation on " + node.data + ". ***");
             return leftRotation(node);
         }
 
         // Left Right Case
         if (balanceFactor > 1 && getBalanceFactor(node.left) < 0) {
-            System.out.println(
-                "*** Performing left-right rotation on " + node.left.data +
-                " and " + node.data + ". ***"
-            );
+            //System.out.println(
+            //    "*** Performing left-right rotation on " + node.left.data +
+            //    " and " + node.data + ". ***"
+            //);
             node.left = leftRotation(node.left);
             return rightRotation(node);
         }
 
         // Right Left Case
         if (balanceFactor < -1 && getBalanceFactor(node.right) > 0) {
-            System.out.println(
-                "*** Performing right-left rotation on " + node.right.data +
-                " and " + node.data + ". ***"
-            );
+            //System.out.println(
+            //    "*** Performing right-left rotation on " + node.right.data +
+            //    " and " + node.data + ". ***"
+            //);
             node.right = rightRotation(node.right);
             return leftRotation(node);
         }
@@ -468,7 +470,7 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
             return null;
         }
 
-        if (node.data.compareTo(data) == 0) {
+        if (data.compareTo(node.data) == 0) {
             return node;
         }
 
@@ -477,6 +479,90 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
         } else {
             return searchNodeRec(node.right, data);
         }
+    }
+
+    private Node<T> iterSearchNode(Node<T> node, T data) {
+        while (node != null && data != node.data) {
+            if (data.compareTo(node.data) < 0) {
+                node = node.left;
+            } else {
+                node = node.right;
+            }
+        }
+        return node;
+    }
+
+    // Will return a subtree that matches with a given prefix, or null if tree is not of type str
+    public Node<String> prefixMatch(String data, Class<T> type) {
+        if (!String.class.isAssignableFrom(type)) {
+            return null;
+        }
+        return prefixMatch((Node<String>) root, data);
+    }
+
+    public Node<String> prefixMatch(Node<String> node, String data) {
+        if (node == null) {
+            return null;
+        }
+        String nodeData = (String) node.data;
+        int lengthOfData = data.length();
+        String nodeDataSubstring = node.data.substring(0, lengthOfData);
+        if (nodeData.startsWith(data)) {
+            return node;
+        }
+
+        if (data.compareTo(nodeDataSubstring) < 0) {
+            return prefixMatch(node.left, data);
+        } else {
+            return prefixMatch(node.right, data);
+        }
+    }
+
+    public List<String> fuzzySearch(String data, int maxDistance, Class<T> type) {
+        if (!String.class.isAssignableFrom(type)) {
+            return null;
+        }
+        
+        List<String> result = new ArrayList<>();
+        fuzzySearch((Node<String>) root, data, maxDistance, result);
+        return result;
+    }
+
+    private void fuzzySearch(Node<String> node, String data, int maxDistance, List<String> result) {
+        if (node == null) {
+            return;
+        }
+        
+        int distance = levenshteinDistance(data, node.data);
+        if (distance <= maxDistance) {
+            result.add(node.data);
+        }
+        
+        // Traverse left and right subtrees
+        fuzzySearch(node.left, data, maxDistance, result);
+        fuzzySearch(node.right, data, maxDistance, result);
+    }
+
+    private int levenshteinDistance(String a, String b) {
+        int[][] dp = new int[a.length() + 1][b.length() + 1];
+
+        // Initialize dp array
+        for (int i = 0; i <= a.length(); i++) {
+            for (int j = 0; j <= b.length(); j++) {
+                if (i == 0) {
+                    dp[i][j] = j; // j insertions
+                } else if (j == 0) {
+                    dp[i][j] = i; // i deletions
+                } else if (a.charAt(i - 1) == b.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1]; // No cost if characters are same
+                } else {
+                    dp[i][j] = 1 + Math.min(dp[i - 1][j - 1], // Substitution
+                                   Math.min(dp[i - 1][j],     // Deletion
+                                            dp[i][j - 1]));   // Insertion
+                }
+            }
+        }
+        return dp[a.length()][b.length()];
     }
 
     public void preorder() {
