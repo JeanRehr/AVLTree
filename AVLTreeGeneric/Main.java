@@ -1,5 +1,4 @@
 import java.util.Scanner;
-import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.nio.file.Files;
@@ -148,7 +147,9 @@ public class Main {
                             "\nPredecessor of sub-tree: " +
                             tree.getPredecessorData(subTreeNode) +
                             "\nRoot of the entire tree: " +
-                            tree.getRootData()
+                            tree.getRootData() +
+                            "\nTotal nodes in this sub-tree: " +
+                            tree.totalNodes(subTreeNode)
                         );
                     } else {
                         System.out.println("Data/sub-tree not found.");
@@ -172,168 +173,35 @@ public class Main {
                 }
                 break;
             case 12: // Mass Insert
-                T valueToBeInserted = null;
-                if (Character.class.isAssignableFrom(type)) {
-                    System.out.print(
-                        "Insert:\n" +
-                        "1 - Numbers.\n" +
-                        "2 - Characters.\n"
-                    );
-                    short x = text.getUserOption((short) 1, (short) 2);
-                    if (x == 1) {
-                        if (intervalsToInsert != 0) {
-                            System.out.print("Press 1 to start assignment from 0> ");
-                            if (text.getInt() == 1) {
-                                intervalsToInsert = 0;
-                            }
-                        }
-                        System.out.print("Size of the array> ");
-                        int userInt = text.getInt();
-                        int numbersForInserting[] = new int[userInt];
-                        System.out.print("Intervals in numbers of> ");
-                        int intervals = text.getInt();
-                        System.out.println(
-                            "Inserting " + userInt +
-                            " numbers in intervals of " + intervals + "."
-                        );
-                        for (int i = 0; i < numbersForInserting.length; i++) {
-                            valueToBeInserted = text.parseValue(String.valueOf(intervalsToInsert), type);
-                            tree.insert(valueToBeInserted);
-                            intervalsToInsert += intervals;
-                        }
-                    } else if (x == 2) {
-                        System.out.print(
-                            "Insert:\n" +
-                            "1 - Uppercase.\n" +
-                            "2 - Lowercase.\n"
-                        );
-                        x = text.getUserOption((short) 1, (short) 2);
-                        if (x == 1) {
-                            for (int asciiValue = 65; asciiValue < 91; asciiValue++) {
-                                char asciiChar = (char) asciiValue;
-                                valueToBeInserted = text.parseValue(String.valueOf(asciiChar), type);
-                                tree.insert(valueToBeInserted);
-                            }
-                        } else {
-                            for (int asciiValue = 97; asciiValue < 123; asciiValue++) {
-                                char asciiChar = (char) asciiValue;
-                                valueToBeInserted = text.parseValue(String.valueOf(asciiChar), type);
-                                tree.insert(valueToBeInserted);
-                            }
-                        }
-                    }
-                } else if (String.class.isAssignableFrom(type)) {
+                if (String.class.isAssignableFrom(type)) {
                     System.out.print(
                         "Insert:\n" +
                         "1 - Numbers.\n" +
                         "2 - Characters.\n" +
                         "3 - Words.\n"
                     );
-                    short x = text.getUserOption((short) 1, (short) 3);
-                    if (x == 1) {
-                        if (intervalsToInsert != 0) {
-                            System.out.print("Press 1 to start assignment from 0> ");
-                            if (text.getInt() == 1) {
-                                intervalsToInsert = 0;
-                            }
-                        }
-                        System.out.print("Size of the array> ");
-                        int userInt = text.getInt();
-                        int numbersForInserting[] = new int[userInt];
-                        System.out.print("Intervals in numbers of> ");
-                        int intervals = text.getInt();
-                        System.out.println(
-                            "Inserting " + userInt +
-                            " numbers in intervals of " + intervals + "."
-                        );
-                        for (int i = 0; i < numbersForInserting.length; i++) {
-                            valueToBeInserted = text.parseValue(String.valueOf(intervalsToInsert), type);
-                            tree.insert(valueToBeInserted);
-                            intervalsToInsert += intervals;
-                        }
-                    } else if (x == 2) {
-                        System.out.print(
-                            "Insert:\n" +
-                            "1 - Uppercase.\n" +
-                            "2 - Lowercase.\n"
-                        );
-                        x = text.getUserOption((short) 1, (short) 2);
-                        if (x == 1) {
-                            for (int asciiValue = 65; asciiValue < 91; asciiValue++) {
-                                char asciiChar = (char) asciiValue;
-                                valueToBeInserted = text.parseValue(String.valueOf(asciiChar), type);
-                                tree.insert(valueToBeInserted);
-                            }
-                        } else {
-                            for (int asciiValue = 97; asciiValue < 123; asciiValue++) {
-                                char asciiChar = (char) asciiValue;
-                                valueToBeInserted = text.parseValue(String.valueOf(asciiChar), type);
-                                tree.insert(valueToBeInserted);
-                            }
-                        }
+                    short insertOption = text.getUserOption((short) 1, (short) 3);
+                    if (insertOption == 1) {
+                        massInsertNumbers(text, tree, type);
+                    } else if (insertOption == 2) {
+                        massInsertChar(text, tree, type);
                     } else {
-                        long startTime = System.nanoTime();
-                        String path;
-                        System.out.println(
-                            "Load all English words?\n" +
-                            "1 - Yes (this is not a fast operation).\n" +
-                            "2 - No (will load words that starts with a and b)."
-                        );
-                        int opt = text.getUserOption((short) 1, (short) 2);
-                        if (opt == 1) {
-                            path = "all_words_less.txt";
-                        } else {
-                            path = "a_b_english.txt";
-                        }
-                            try (Stream<String> lines = Files.lines(Paths.get(path))) {
-                                lines.forEach(word -> tree.insert((T) word));
-                            } catch (Exception e) {
-                                System.out.println("File not found or unable to read file.");
-                            }
-                            /*try (BufferedReader bf = new BufferedReader(new FileReader("enw.txt"))) {
-                                String word;
-                                while ((word = bf.readLine()) != null) {
-                                    tree.insert((T) word);
-                                }
-                            } catch (Exception e) {
-                                System.out.println("File not found.");
-                            }*/
-                            // unacceptable performance with scanner
-                            /*try (Scanner sc = new Scanner(new File("words.txt"))) {
-                            sc.useDelimiter("(\\n)");
-                            while(sc.hasNext()) {
-                                String word = sc.next();
-                                if (word.length() > 0) {
-                                    tree.insert((T) word);
-                                }
-                            }
-                            } catch (Exception e) {
-                                System.out.println("File not found.");
-                            }*/
-                        long endTime = System.nanoTime();
-                        System.out.println("Duration: " + ((endTime - startTime) / 1000000));
+                        massInsertWords(text, tree, type, scanner);
+                    }
+                } else if (Character.class.isAssignableFrom(type)) {
+                    System.out.print(
+                        "Insert:\n" +
+                        "1 - Numbers.\n" +
+                        "2 - Characters.\n"
+                    );
+                    short insertOption = text.getUserOption((short) 1, (short) 2);
+                    if (insertOption == 1) {
+                        massInsertNumbers(text, tree, type);
+                    } else {
+                    massInsertChar(text, tree, type);
                     }
                 } else {
-                    if (intervalsToInsert != 0) {
-                        System.out.print("Press 1 to start assignment from 0> ");
-                        int resetJ = text.getInt();
-                        if (resetJ == 1) {
-                            intervalsToInsert = 0;
-                        }
-                    }
-                    System.out.print("Size of the array> ");
-                    int userInt = text.getInt();
-                    int numbersForInserting[] = new int[userInt];
-                    System.out.print("Intervals in numbers of> ");
-                    int intervals = text.getInt();
-                    System.out.println(
-                        "Inserting " + userInt + " numbers in intervals of " + intervals + "."
-                    );
-                    for (int i = 0; i < numbersForInserting.length; i++) {
-                        valueToBeInserted = text.parseValue(String.valueOf(intervalsToInsert), type);
-                        tree.insert(valueToBeInserted);
-                        intervalsToInsert += intervals;
-                    }
+                    massInsertNumbers(text, tree, type);
                 }
                 break;
             case 13: // Mass Delete
@@ -355,7 +223,7 @@ public class Main {
                 break;
             case 15: // Fuzzy search
                 if (String.class.isAssignableFrom(type)) {
-                    System.out.print("Search words that are similar with> ");
+                    System.out.print("Search words that are similar with (case-sensitive)> ");
                     String word = scanner.nextLine();
                     System.out.print("How similar on a number scale (0 = very similar)> ");
                     int similarity = text.getInt();
@@ -377,7 +245,187 @@ public class Main {
                     System.out.println("This operation only works with String trees");
                 }
                 break;
+            case 17:
+                Node<T> currentNode = tree.root;
+                short opt = 0;
+                while (opt != 4) {
+                    System.out.print("\t  ");
+                    tree.printParentData(currentNode);
+                    System.out.print("\n");
+                    System.out.print("\t  |\n");
+                    System.out.print("\t  ");
+                    tree.printCurrentData(currentNode);
+                    System.out.print("\n");
+                    System.out.print("\t / \\\n");
+                    System.out.print("\t");
+                    tree.printLeftData(currentNode);
+                    System.out.print("   ");
+                    tree.printRightData(currentNode);
+                    System.out.print("\n");
+    
+                    System.out.print(
+                        "Walk:\n" +
+                        "1 - Left.\n" +
+                        "2 - Right.\n" +
+                        "3 - Up.\n" +
+                        "4 - Exit.\n"
+                    );
+                    opt = text.getUserOption((short) 1, (short) 4);
+                    currentNode = walk(tree, currentNode, opt);
+                }
             }
         }
+    }
+
+
+    public static <T extends Comparable<T>> Node<T> walk(AVLTreeGeneric<T> tree, Node<T> node, short opt) {
+        if (opt == 1) {
+            if (node.left == null) {
+                System.out.println("*** Left is null. ***");
+                return node;
+            } else {
+                return node.left;
+            }
+            
+        } else if (opt == 2) {
+            
+            if (node.right == null) {
+                System.out.println("*** Right is null. ***");
+                return node;
+            } else {
+                return node.right;
+            }
+        } else if (opt == 3) {
+            if (node.parent == null) {
+                System.out.println("*** Parent is null. ***");
+                return node;
+            } else {
+                return node.parent;
+            }
+        }
+        return node;
+    }
+
+    public static <T extends Comparable<T>> void massInsertNumbers(
+        Text text,
+        AVLTreeGeneric<T> tree,
+        Class<T> type
+        ) {
+        T valueToBeInserted = null;
+        System.out.print("Start the insertion at what number> ");
+        int startNumber = text.getInt();
+        System.out.print("Max number to stop insertions> ");
+        int endNumber = text.getInt();
+        int intervals = 0;
+        while (intervals == 0) {
+            System.out.print("Intervals in numbers of> ");
+            intervals = text.getInt();
+            if (intervals == 0) {
+                System.out.println("Intervals can't be 0.");
+            }
+        }
+        System.out.println(
+            "Inserting " + endNumber +
+            " from " + startNumber +
+            " in intervals of " + intervals + "."
+        );
+        for (int i = startNumber; i <= endNumber; i = i + intervals) {
+            valueToBeInserted = text.parseValue(String.valueOf(i), type);
+            tree.insert(valueToBeInserted);
+        }
+    }
+
+    public static <T extends Comparable<T>> void massInsertChar(
+        Text text,
+        AVLTreeGeneric<T> tree,
+        Class<T> type
+    ) {
+        T valueToBeInserted = null;
+        System.out.print(
+            "Insert:\n" +
+            "1 - Uppercase.\n" +
+            "2 - Lowercase.\n"
+        );
+        int opt = text.getUserOption((short) 1, (short) 2);
+        if (opt == 1) {
+            for (int asciiValue = 65; asciiValue < 91; asciiValue++) {
+                char asciiChar = (char) asciiValue;
+                valueToBeInserted = text.parseValue(String.valueOf(asciiChar), type);
+                tree.insert(valueToBeInserted);
+            }
+        } else if (opt == 2) {
+            for (int asciiValue = 97; asciiValue < 123; asciiValue++) {
+                char asciiChar = (char) asciiValue;
+                valueToBeInserted = text.parseValue(String.valueOf(asciiChar), type);
+                tree.insert(valueToBeInserted);
+            }
+        }
+    }
+
+    public static <T extends Comparable<T>> void massInsertWords(
+        Text text,
+        AVLTreeGeneric<T> tree,
+        Class<T> type,
+        Scanner scanner
+    ) {
+        if (!String.class.isAssignableFrom(type)) {
+            System.out.println("Only String Trees are accepted for this operation.");
+            return;
+        }
+        
+        String path;
+
+        System.out.println(
+            "Load all English words?\n" +
+            "1 - Yes (this is not a fast operation).\n" +
+            "2 - No (will load words that starts with a and b).\n" +
+            "3 - Load a file of words (must be separated by new lines).\n" +
+            "4 - Cancel."
+        );
+
+        int opt = text.getUserOption((short) 1, (short) 4);
+
+        if (opt == 1) {
+            path = "all_words_less.txt";
+        } else if (opt == 2) {
+            path = "a_b_english.txt";
+        } else if (opt == 3) {
+            System.out.print("File name> ");
+            path = scanner.nextLine();
+        } else {
+            return;
+        }
+
+        long startTime = System.nanoTime();
+
+        try (Stream<String> lines = Files.lines(Paths.get(path))) {        
+            lines.forEach(word -> tree.insert((T) word));
+        } catch (Exception e) {
+            System.out.println("File not found or unable to read file.");
+        }
+        /*try (BufferedReader bf = new BufferedReader(new FileReader("enw.txt"))) {
+            long startTime = System.nanoTime();
+            String word;
+            while ((word = bf.readLine()) != null) {
+                tree.insert((T) word);
+            }
+        } catch (Exception e) {
+            System.out.println("File not found.");
+        }*/
+        // unacceptable performance with scanner
+        /*try (Scanner sc = new Scanner(new File("words.txt"))) {
+            long startTime = System.nanoTime();
+            sc.useDelimiter("(\\n)");
+            while(sc.hasNext()) {
+                String word = sc.next();
+                if (word.length() > 0) {
+                    tree.insert((T) word);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("File not found.");
+        }*/
+        long endTime = System.nanoTime();
+        System.out.println("Duration: " + ((endTime - startTime) / 1000000) + "ms");
     }
 }
