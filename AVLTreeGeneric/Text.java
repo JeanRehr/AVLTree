@@ -1,4 +1,5 @@
 import java.util.Scanner;
+
 public class Text {
     Scanner scanner = new Scanner(System.in);
     public void clearConsole() {
@@ -18,7 +19,7 @@ public class Text {
             "        [3] Insert.     [9] Exit.              [14] Print before operations.\n" +
             "        [4] Remove.     [0] Clearscreen.       [15] Fuzzy search.\n" +
             "        [5] Preorder.   [10] Info of a node.   [16] Prefix search.\n" +
-            "        [6] Postorder.  [11] Print a sub-tree.\n" +
+            "        [6] Postorder.  [11] Print a sub-tree. [17] Manually walk the tree.\n" +
             "---------------------------------------------------------------------------------\n"
         );
     }
@@ -44,8 +45,12 @@ public class Text {
     }
 
     public String getNextLine() {
-        String userInput = scanner.nextLine();
-        return userInput;
+        try {
+            return scanner.nextLine();
+        } catch (Exception e) {
+            System.err.println("Error reading input: " + e.getMessage());
+            return "";
+        }
     }
 
     public int getInt() {
