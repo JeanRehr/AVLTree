@@ -13,12 +13,12 @@ public class Text {
     public void options() {
         System.out.print(
             "---------------------------------------------------------------------------------\n" +
-            "Options:" +
-            "[1] Print tree.\t[6] Postorder.\t[10] Info based on a node.\n" +
-            "\t[2] Search.\t[7] Inorder.\t[11] Print a sub-tree.\n" +
-            "\t[3] Insert.\t[8] Help.\t[12] Mass insert.\n" +
-            "\t[4] Remove.\t[9] Exit.\t[13] Mass delete a sub-tree.\n" +
-            "\t[5] Preorder.\t[0] Clearscreen.[14] Print before operations.\n" +
+            "Options:[1] Print tree. [7] Inorder.           [12] Mass insert.\n" +
+            "        [2] Search.     [8] Help.              [13] Mass delete subtree.\n" +
+            "        [3] Insert.     [9] Exit.              [14] Print before operations.\n" +
+            "        [4] Remove.     [0] Clearscreen.       [15] Fuzzy search.\n" +
+            "        [5] Preorder.   [10] Info of a node.   [16] Prefix search.\n" +
+            "        [6] Postorder.  [11] Print a sub-tree.\n" +
             "---------------------------------------------------------------------------------\n"
         );
     }
@@ -43,9 +43,14 @@ public class Text {
         }
     }
 
+    public String getNextLine() {
+        String userInput = scanner.nextLine();
+        return userInput;
+    }
+
     public int getInt() {
         while (!scanner.hasNextInt()) {
-            System.out.print("Invalid number.\nNumber> ");
+            System.out.print("Invalid number.\n> ");
             scanner.next();
         }
         return scanner.nextInt();
@@ -53,24 +58,20 @@ public class Text {
 
     public short getShort() {
         while (!scanner.hasNextShort()) {
-            System.out.print("Invalid number.\nNumber> ");
+            System.out.print("Invalid number.\n> ");
             scanner.next();
         }
         return scanner.nextShort();
     }
 
-    public short getUserOption(short high, short low) {
+    public short getUserOption(short low, short high) {
         System.out.print("Option> ");
         short userOpt = getShort();
         while (userOpt > high || userOpt < low) {
-            System.out.print("Invalid option.\nOption> ");
+            System.out.print("Invalid option.\n> ");
             userOpt = getShort();
         }
         return userOpt;
-    }
-
-    public void help() {
-        System.out.println("AVL Tree implemented in Java, works only with integers.");
     }
 }
 
