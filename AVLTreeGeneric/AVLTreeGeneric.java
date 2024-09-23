@@ -613,6 +613,26 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
         }
     }
 
+    public void printBrotherData(Node<T> node) {
+        if (node.parent == null) {
+            System.out.print("");
+        } else {
+            if (node.parent.left == node) {
+                if (node.parent.right != null) {
+                    System.out.print(node.parent.right.data);
+                } else {
+                    System.out.print("");
+                }
+            } else if (node.parent.right == node) {
+                if (node.parent.left != null) {
+                    System.out.print(node.parent.left.data);
+                } else {
+                    System.out.print("");
+                }
+            }
+        }
+    }
+
     public void printParentData(Node<T> node) {
         if (node.parent == null) {
             System.out.print("");
