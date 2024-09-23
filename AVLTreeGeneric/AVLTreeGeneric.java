@@ -40,7 +40,7 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
         if (cmp < 0) {
             // If the data is less than the node's data, go to the left subtree
             node.left = insertRec(node.left, data, node); // node is now the parent of the newnode
-        } else if (cmp > 0) {                             // as we go down the tree
+        } else if (cmp > 0) {                                      // as we go down the tree
             // If the data is greater than the node's data, go to the right subtree
             node.right = insertRec(node.right, data, node);
         }
@@ -82,7 +82,7 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
                 }
 
             } else { // Two children deletion
-                Node<T> temp = minimum(node.right); // The successor on the right of the deleted node
+                Node<T> temp = minimum(node.right); // The successor to right of the deleted node
                 node.data = temp.data; // Assign the data in the temp to the node to be "deleted"
                 node.right = removeRec(node.right, temp.data); // remove the successor of the node
             }
@@ -250,7 +250,7 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
         node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
     }
 
-    private int getHeight(Node<T> node) {
+    public int getHeight(Node<T> node) {
         if (node == null) {
             return 0;
         }
@@ -393,9 +393,9 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
             return Optional.empty();
         }
         Node<T> successor = successor(node);
-        if (successor == null) { // Case tree has no right nodes, it will return the parent in the
-            return Optional.empty(); // called function, if the parent is null a null pointer excep
-        } else {                 // will occur without this if
+        if (successor == null) {     // Case tree has no right nodes, it will return the parent in
+            return Optional.empty(); // the called function, if the parent is null a null pointer
+        } else {                     // exception will occur without this if
             return Optional.of(successor.data);
         }
     }
@@ -422,9 +422,9 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
             return Optional.empty();
         }
         Node<T> predecessor = predecessor(node);
-        if (predecessor == null) { // Case tree has no left nodes, it will return the parent in the
-            return Optional.empty();              // called function, if the parent is null a null pointer excep
-        } else {                   // will occur without this if
+        if (predecessor == null) {   // Case tree has no left nodes, it will return the parent in
+            return Optional.empty(); // the called function, if the parent is null a null pointer
+        } else {                     // exception will occur without this if
             return Optional.of(predecessor.data); 
         }
     }
@@ -549,7 +549,6 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
             result.add(node.data);
         }
         
-        // Traverse left and right subtrees
         fuzzySearch(node.left, data, maxDistance, result);
         fuzzySearch(node.right, data, maxDistance, result);
     }
@@ -557,7 +556,6 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
     private int levenshteinDistance(String a, String b) {
         int[][] dp = new int[a.length() + 1][b.length() + 1];
 
-        // Initialize dp array
         for (int i = 0; i <= a.length(); i++) {
             for (int j = 0; j <= b.length(); j++) {
                 if (i == 0) {
