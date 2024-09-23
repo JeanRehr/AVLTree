@@ -245,16 +245,18 @@ public class Main {
                     System.out.println("This operation only works with String trees");
                 }
                 break;
-            case 17:
-                Node<T> currentNode = tree.root;
+            case 17: // Manually walk the tree.
+                Node<T> currentNode = tree.root; // starts at root
                 short opt = 0;
                 while (opt != 4) {
+                    // tree representation
                     System.out.print("\t  ");
                     tree.printParentData(currentNode);
                     System.out.print("\n");
                     System.out.print("\t  |\n");
                     System.out.print("\t  ");
                     tree.printCurrentData(currentNode);
+                    System.out.print(" H: " + tree.getHeight(currentNode));
                     System.out.print("\n");
                     System.out.print("\t / \\\n");
                     System.out.print("\t");
@@ -266,42 +268,41 @@ public class Main {
                     System.out.print(
                         "Walk:\n" +
                         "1 - Left.\n" +
-                        "2 - Right.\n" +
-                        "3 - Up.\n" +
+                        "2 - Up.\n" +
+                        "3 - Right.\n" +
                         "4 - Exit.\n"
                     );
                     opt = text.getUserOption((short) 1, (short) 4);
-                    currentNode = walk(tree, currentNode, opt);
-                }
+                    currentNode = walk(tree, currentNode, opt); // current node gets assigned
+                }                                               // to a direction depending on opt
             }
         }
     }
 
-
-    public static <T extends Comparable<T>> Node<T> walk(AVLTreeGeneric<T> tree, Node<T> node, short opt) {
+    // Returns the current node where it is going
+    public static <T extends Comparable<T>> Node<T> walk(
+        AVLTreeGeneric<T> tree,
+        Node<T> node,
+        short opt
+        ) {
         if (opt == 1) {
             if (node.left == null) {
                 System.out.println("*** Left is null. ***");
                 return node;
-            } else {
-                return node.left;
             }
-            
+            return node.left;
         } else if (opt == 2) {
-            
-            if (node.right == null) {
-                System.out.println("*** Right is null. ***");
-                return node;
-            } else {
-                return node.right;
-            }
-        } else if (opt == 3) {
             if (node.parent == null) {
                 System.out.println("*** Parent is null. ***");
                 return node;
-            } else {
-                return node.parent;
             }
+            return node.parent;
+        } else if (opt == 3) {
+            if (node.right == null) {
+                System.out.println("*** Right is null. ***");
+                return node;
+            }
+            return node.right;
         }
         return node;
     }
@@ -325,8 +326,8 @@ public class Main {
             }
         }
         System.out.println(
-            "Inserting " + endNumber +
-            " from " + startNumber +
+            "Inserting " + startNumber +
+            " to " + endNumber +
             " in intervals of " + intervals + "."
         );
         for (int i = startNumber; i <= endNumber; i = i + intervals) {
