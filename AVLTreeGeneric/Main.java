@@ -253,10 +253,26 @@ public class Main {
                     System.out.print("\t  ");
                     tree.printParentData(currentNode);
                     System.out.print("\n");
-                    System.out.print("\t  |\n");
-                    System.out.print("\t  ");
-                    tree.printCurrentData(currentNode);
-                    System.out.print(" H: " + tree.getHeight(currentNode));
+                    if (currentNode.parent != null) {
+                        if (currentNode.parent.left == currentNode) {
+                            System.out.print("\t  |\\\n");
+                            System.out.print("          ");
+                            tree.printCurrentData(currentNode);
+                            System.out.print(" ");
+                            tree.printBrotherData(currentNode);
+                        } else {
+                            System.out.print("\t /|\n");
+                            System.out.print("       ");
+                            tree.printBrotherData(currentNode);
+                            System.out.print(" ");
+                            tree.printCurrentData(currentNode);
+                        }
+                    } else {
+                        System.out.print("\t  |\n");
+                        System.out.print("          ");
+                        tree.printCurrentData(currentNode);
+                    }
+                    System.out.print("\tH: " + tree.getHeight(currentNode));
                     System.out.print("\n");
                     System.out.print("\t / \\\n");
                     System.out.print("\t");
