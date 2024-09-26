@@ -62,58 +62,87 @@ public class Main {
         while (userOpt != 9) {
             text.options();
 
-            userOpt = text.getUserOption((short) 1, (short) 17);
+            userOpt = text.getUserOption((short) 0, (short) 17);
 
             switch (userOpt) {
             case 1: // Print Tree
-                tree.printTree(tree.root);
+                if (isTreeEmpty(tree)) {
+                    System.out.println("Tree is empty.");
+                    break;
+                }
+                tree.printTree(tree.getRoot());
                 break;
             case 2: // Search
+                if (isTreeEmpty(tree)) {
+                    System.out.println("Tree is empty.");
+                    break;
+                }
+
                 System.out.print("Enter value to search> ");
                 userValue = text.parseValue(scanner.nextLine(), type);
-                if (userValue != null) {
-                    System.out.println((tree.search(userValue)) ? "Data found." : "Not found.");
-                } else {
+
+                if (userValue == null) {
                     System.out.println("Invalid input for " + type.getSimpleName());
+                    break;
                 }
+
+                System.out.println((tree.search(userValue)) ? "Data found." : "Not found.");   
                 break;
             case 3: // Insert
                 System.out.print("Enter value to insert> ");
                 userValue = text.parseValue(scanner.nextLine(), type);
                 if (printBeforeAfter) {
                     System.out.println("Tree before operation:");
-                    tree.printTree(tree.root);
+                    tree.printTree(tree.getRoot());
                 }
-                if (userValue != null) {
-                    tree.insert(userValue);
-                    System.out.println("Tree after operation:");
-                    tree.printTree(tree.root);
-                } else {
+                if (userValue == null) {
                     System.out.println("Invalid input for " + type.getSimpleName());
+                    break;
                 }
+        
+                tree.insert(userValue);
+                System.out.println("Tree after operation:");
+                tree.printTree(tree.getRoot());        
                 break;
             case 4: // Remove
+                if (isTreeEmpty(tree)) {
+                    System.out.println("Tree is empty.");
+                    break;
+                }
                 System.out.print("Remove which value> ");
                 userValue = text.parseValue(scanner.nextLine(), type);
                 if (printBeforeAfter) {
                     System.out.println("Tree before operation:");
-                    tree.printTree(tree.root);
+                    tree.printTree(tree.getRoot());
                 }
-                if (userValue != null) {
-                    tree.remove(userValue);
-                    System.out.println("Tree after operation:");
-                    tree.printTree(tree.root);
-                } else {
+                if (userValue == null) {
                     System.out.println("Invalid input for " + type.getSimpleName());
+                    break;
                 }
+
+                tree.remove(userValue);
+                System.out.println("Tree after operation:");
+                tree.printTree(tree.getRoot());
                 break;
             case 5: // Preorder
+                if (isTreeEmpty(tree)) {
+                    System.out.println("Tree is empty.");
+                    break;
+                }
                 tree.preorder();
                 break;
             case 6: // Postorder
+                if (isTreeEmpty(tree)) {
+                    System.out.println("Tree is empty.");
+                    break;
+                }
                 tree.postorder();
                 break;
             case 7: // Inorder
+                if (isTreeEmpty(tree)) {
+                    System.out.println("Tree is empty.");
+                    break;
+                }
                 tree.inorder();
                 break;
             case 8: // Help
@@ -127,50 +156,68 @@ public class Main {
                 text.clearConsole();
                 break;
             case 10: // Print Info
+                if (isTreeEmpty(tree)) {
+                    System.out.println("Tree is empty.");
+                    break;
+                }
+
                 System.out.print(
-                    "Info based on which node (root is: " + 
-                    ((tree.getRoot() != null) ? tree.getRootData() : "null") + ")> "
+                    "Info based on which node (root is: " +
+                    tree.nodeDataToString(tree.getRoot()) + ")> "
                 );
                 userValue = text.parseValue(scanner.nextLine(), type);
-                if (userValue != null) {
-                    Node<T> subTreeNode = tree.searchNode(userValue);
-                    if (subTreeNode != null) {
-                        System.out.println(
-                            "Minimum of sub-tree: " +
-                            tree.getMinimumData(subTreeNode) +
-                            "\nMaximum of sub-tree: " +
-                            tree.getMaximumData(subTreeNode) +
-                            "\nRoot of the sub-tree: " +
-                            userValue +
-                            "\nSuccessor of sub-tree: " +
-                            tree.getSuccessorData(subTreeNode) +
-                            "\nPredecessor of sub-tree: " +
-                            tree.getPredecessorData(subTreeNode) +
-                            "\nRoot of the entire tree: " +
-                            tree.getRootData() +
-                            "\nTotal nodes in this sub-tree: " +
-                            tree.totalNodes(subTreeNode)
-                        );
-                    } else {
-                        System.out.println("Data/sub-tree not found.");
-                    }
-                } else {
+
+                if (userValue == null) {
                     System.out.println("Invalid input for " + type.getSimpleName());
+                    break;
                 }
+
+                Node<T> subTreeNode = tree.searchNode(userValue);
+
+                if (subTreeNode == null) {
+                    System.out.println("Data/sub-tree not found.");
+                    break;
+                }
+
+                System.out.println(
+                    "Minimum of sub-tree: " +
+                    tree.nodeDataToString(tree.minimum(subTreeNode)) +
+                    "\nMaximum of sub-tree: " +
+                    tree.nodeDataToString(tree.maximum(subTreeNode)) +
+                    "\nRoot of the sub-tree: " +
+                    userValue +
+                    "\nSuccessor of sub-tree: " +
+                    tree.nodeDataToString(tree.successor(subTreeNode)) +
+                    "\nPredecessor of sub-tree: " +
+                    tree.nodeDataToString(tree.predecessor(subTreeNode)) +
+                    "\nRoot of the entire tree: " +
+                    tree.nodeDataToString(tree.getRoot()) +
+                    "\nTotal nodes in this sub-tree: " +
+                    tree.getTotalNodes(subTreeNode)
+                );
                 break;
             case 11: // Print sub-tree
+                if (isTreeEmpty(tree)) {
+                    System.out.println("Tree is empty.");
+                    break;
+                }
+
                 System.out.print("Print from which sub-tree> ");
                 userValue = text.parseValue(scanner.nextLine(), type);
-                if (userValue != null) {
-                    Node<T> subTree = tree.searchNode(userValue);
-                    if (subTree != null) {
-                        tree.printTree(subTree);
-                    } else {
-                        System.out.println("Data/sub-tree not found.");
-                    }
-                } else {
+                
+                if (userValue == null) {
                     System.out.println("Invalid input for " + type.getSimpleName());
+                    break;
                 }
+
+                Node<T> subTree = tree.searchNode(userValue);
+
+                if (subTree == null) {
+                    System.out.println("Data/sub-tree not found.");
+                    break;
+                }
+
+                tree.printTree(subTree);
                 break;
             case 12: // Mass Insert
                 if (String.class.isAssignableFrom(type)) {
@@ -205,81 +252,82 @@ public class Main {
                 }
                 break;
             case 13: // Mass Delete
-                System.out.print("Delete which sub-tree> ");
+                if (isTreeEmpty(tree)) {
+                    System.out.println("Tree is empty.");
+                    break;
+                }
+
+                System.out.print("Delete which sub-tree (Root is: " + tree.nodeDataToString(tree.getRoot()) + ")> ");
+                
                 userValue = text.parseValue(scanner.nextLine(), type);
+                
                 if (printBeforeAfter) {
                     System.out.println("Tree before operation:");
-                    tree.printTree(tree.root);
+                    tree.printTree(tree.getRoot());
                 }
-                if (userValue != null) {
-                    tree.massRemove(userValue);
-                } else {
+
+                if (userValue == null) {
                     System.out.println("Invalid input for " + type.getSimpleName());
+                    break;
                 }
+
+                tree.massRemove(userValue);
                 break;
             case 14: // Before print statements
                 printBeforeAfter = !printBeforeAfter;
                 System.out.println("Print before operations: " + printBeforeAfter);
                 break;
-            case 15: // Fuzzy search
-                if (String.class.isAssignableFrom(type)) {
-                    System.out.print("Search words that are similar with (case-sensitive)> ");
-                    String word = scanner.nextLine();
-                    System.out.print("How similar on a number scale (0 = very similar)> ");
-                    int similarity = text.getInt();
-                    List<String> fuzzyWords = new ArrayList<>();
-                    fuzzyWords = tree.fuzzySearch(word, similarity, type);
-                    System.out.println("Result:");
-                    for (int i = 0; i < fuzzyWords.size(); i++) {
-                        System.out.println(fuzzyWords.get(i));
-                    }
-                } else {
-                    System.out.println("This operation only works with String trees");
+            case 15: // Prefix match - prints the subtree that matches a given prefix
+                if (isTreeEmpty(tree)) {
+                    System.out.println("Tree is empty.");
+                    break;
                 }
-                break;
-            case 16: // Prefix match - prints the subtree that matches a given prefix
-                if (String.class.isAssignableFrom(type)) {
-                    System.out.print("Search words that starts with> ");
-                    tree.printTree((Node<T>) tree.prefixMatch(scanner.nextLine(), type));
-                } else {
+
+                if (!String.class.isAssignableFrom(type)) {
                     System.out.println("This operation only works with String trees");
+                    break;
+                }
+
+                System.out.print("Search words that starts with (case-sensitive)> ");
+                tree.printTree((Node<T>) tree.prefixMatch(scanner.nextLine(), type));
+                break;
+            case 16: // Fuzzy search
+                if (isTreeEmpty(tree)) {
+                    System.out.println("Tree is empty.");
+                    break;
+                }
+
+                if (!String.class.isAssignableFrom(type)) {
+                    System.out.println("This operation only works with String trees");
+                    break;
+                }
+                
+                System.out.print("Search words that are similar with (case-sensitive)> ");
+                String word = scanner.nextLine();
+                
+                System.out.print("How similar on a number scale (0 = very similar)> ");
+                int similarity = text.getInt();
+                
+                List<String> fuzzyWords = new ArrayList<>();
+                
+                fuzzyWords = tree.fuzzySearch(word, similarity, type);
+
+                System.out.println("Result:");
+                for (int i = 0; i < fuzzyWords.size(); i++) {
+                    System.out.println(fuzzyWords.get(i));
                 }
                 break;
             case 17: // Manually walk the tree.
-                Node<T> currentNode = tree.root; // starts at root
+                if (isTreeEmpty(tree)) {
+                    System.out.println("Tree is empty.");
+                    break;
+                }
+
+                Node<T> currentNode = tree.getRoot(); // starts at root
+
                 short opt = 0;
                 while (opt != 4) {
-                    // tree representation
-                    System.out.print("\t  ");
-                    tree.printParentData(currentNode);
-                    System.out.print("\n");
-                    if (currentNode.parent != null) {
-                        if (currentNode.parent.left == currentNode) {
-                            System.out.print("\t  |\\\n");
-                            System.out.print("          ");
-                            tree.printCurrentData(currentNode);
-                            System.out.print(" ");
-                            tree.printBrotherData(currentNode);
-                        } else {
-                            System.out.print("\t /|\n");
-                            System.out.print("       ");
-                            tree.printBrotherData(currentNode);
-                            System.out.print(" ");
-                            tree.printCurrentData(currentNode);
-                        }
-                    } else {
-                        System.out.print("\t  |\n");
-                        System.out.print("          ");
-                        tree.printCurrentData(currentNode);
-                    }
-                    System.out.print("\tH: " + tree.getHeight(currentNode));
-                    System.out.print("\n");
-                    System.out.print("\t / \\\n");
-                    System.out.print("\t");
-                    tree.printLeftData(currentNode);
-                    System.out.print("   ");
-                    tree.printRightData(currentNode);
-                    System.out.print("\n");
+                    treeRepresentation(currentNode, tree);
     
                     System.out.print(
                         "Walk:\n" +
@@ -288,11 +336,57 @@ public class Main {
                         "3 - Right.\n" +
                         "4 - Exit.\n"
                     );
+
                     opt = text.getUserOption((short) 1, (short) 4);
+                    
                     currentNode = walk(tree, currentNode, opt); // current node gets assigned
                 }                                               // to a direction depending on opt
             }
         }
+    }
+
+    public static boolean isTreeEmpty(AVLTreeGeneric tree) {
+        return tree.getRoot() == null ? true : false;
+    }
+
+    // Representing the tree with parent, brother and children
+    public static <T extends Comparable<T>> void treeRepresentation(
+        Node<T> node,
+        AVLTreeGeneric<T> tree
+    ) {
+        System.out.print("\t  " + tree.nodeDataToString(node.parent) + "\n");
+        if (node.parent == null) {
+            System.out.print("\n          " + tree.nodeDataToString(node));
+            System.out.print("        H: " + tree.getHeight(node));
+        } else {
+            if (node.parent.left == node && node.parent.right != null) {
+                System.out.print("\t  | \\\n");
+                System.out.print("          " + tree.nodeDataToString(node));
+                System.out.print("  " + tree.nodeDataToString(node.parent.right));
+                System.out.print("            H: " + tree.getHeight(node));
+            } else if (node.parent.right == node && node.parent.left != null) {
+                System.out.print("\t /|\n");
+                System.out.print("       " + tree.nodeDataToString(node.parent.left));
+                System.out.print(" " + tree.nodeDataToString(node));
+                System.out.print("            H: " + tree.getHeight(node));
+            } else {
+                System.out.print("\t  |\n");
+                System.out.print("         " + tree.nodeDataToString(node));
+                System.out.print("            H: " + tree.getHeight(node));
+            }
+        }
+        System.out.print("\n");
+        if (node.left != null && node.right != null) {
+            System.out.print("\t /  \\\n");
+        } else if (node.left != null && node.right == null) {
+            System.out.print("\t /\n");
+        } else if (node.left == null && node.right != null) {
+            System.out.print("\t   \\\n");
+        } else {
+            System.out.print("\n");
+        }
+        System.out.print("\t" + tree.nodeDataToString(node.left));
+        System.out.print("   " + tree.nodeDataToString(node.right) + "\n");
     }
 
     // Returns the current node where it is going
@@ -300,7 +394,7 @@ public class Main {
         AVLTreeGeneric<T> tree,
         Node<T> node,
         short opt
-        ) {
+    ) {
         if (opt == 1) {
             if (node.left == null) {
                 System.out.println("*** Left is null. ***");
@@ -352,12 +446,13 @@ public class Main {
         }
     }
 
-    public static <T extends Comparable<T>> void massInsertChar(
+    public static <T extends Comparable <T>> void massInsertChar(
         Text text,
         AVLTreeGeneric<T> tree,
         Class<T> type
     ) {
         T valueToBeInserted = null;
+        
         System.out.print(
             "Insert:\n" +
             "1 - Uppercase.\n" +
@@ -393,9 +488,9 @@ public class Main {
         String path;
 
         System.out.println(
-            "Load all English words?\n" +
+            "Load 274926 English words?\n" +
             "1 - Yes (this is not a fast operation).\n" +
-            "2 - No (will load words that starts with a and b).\n" +
+            "2 - No (will load the words that starts with a and b).\n" +
             "3 - Load a file of words (must be separated by new lines).\n" +
             "4 - Cancel."
         );
