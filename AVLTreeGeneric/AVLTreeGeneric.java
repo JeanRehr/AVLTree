@@ -18,6 +18,282 @@ class Node<T> {
 public class AVLTreeGeneric<T extends Comparable<T>> {
     Node<T> root;  // The root node of the tree
 
+    public int getHeight(Node<T> node) {
+        if (node == null) {
+            return 0;
+        }
+
+        return node.height;
+    }
+
+    private void setHeight(Node<T> node) {
+        if (node == null) {
+            return;
+        }
+
+        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
+    }
+
+    public Node<T> getRoot() {
+        return this.root;
+    }
+
+    private int getBalanceFactor(Node<T> node) {
+        if (node == null) {
+            return 0;
+        }
+
+        // return node == null ? 0 : getHeight(node.left) - getHeight(node.right);
+        return getHeight(node.left) - getHeight(node.right);
+    }
+
+    public int getTotalNodes(Node<T> node) {
+        if (node == null) {
+            return 0;
+        }
+
+        int left = getTotalNodes(node.left);
+        int right = getTotalNodes(node.right);
+        
+        return 1 + left + right;
+    }
+
+    public Node<T> maximum(Node<T> node) {
+        if (node == null) {
+            return null;
+        }
+        while (node.right != null) {
+            node = node.right;
+        }
+        return node;
+    }
+
+
+    public Node<T> minimum(Node<T> node) {
+        if (node == null) {
+            return null;
+        }
+        while (node.left != null) {
+            node = node.left;
+        }
+        return node;
+    }
+
+    // Just testing
+    public Node<T> minimumRec(Node<T> node) {
+        if (node == null) {
+            return null;
+        }
+        if (node.left == null) {
+            return node;
+        } else {
+            return minimumRec(node.left);
+        }
+    }
+
+    public Node<T> successor(Node<T> node) {
+        if (node == null) {
+            return null;
+        }
+
+        if (node.right != null) {
+            return minimum(node.right);
+        }
+
+        Node<T> y = node.parent;
+        while (y != null && node == y.right) {
+            node = y;
+            y = y.parent;
+        }
+        return y;
+    }
+
+    public Node<T> predecessor(Node<T> node) {
+        if (node == null) {
+            return null;
+        }
+
+        if (node.left != null) {
+            return maximum(node.left);
+        }
+
+        Node<T> y = node.parent;
+        while (y != null && node == node.left) {
+            node = y;
+            y = y.parent;
+        }
+        return y;
+    }
+
+    public String nodeDataToString(Node<T> node) {
+        return node == null ? "" : node.data.toString();
+    }
+
+    /* These fn returns the data in an Optional[data] format, use the nodeDataToString instead
+    public Optional<T> getNodeData(Node<T> node) {
+        return node == null ? Optional.empty() : Optional.of(node.data);
+    }
+
+    public Optional<T> getRootData() {
+        if (this.root == null) {
+            return Optional.empty();
+        }
+        return Optional.of(this.root.data);
+    }
+
+    public Optional<T> getMaximumData(Node<T> node) {
+        if (node == null) {
+            return Optional.empty();
+        }
+        Node<T> max = maximum(node);
+        return Optional.of(max.data);
+    }
+
+    public Optional<T> getMinimumData(Node<T> node) {
+        if (node == null) {
+            return Optional.empty();
+        }
+        Node<T> min = minimum(node);
+        return Optional.of(min.data);
+    }
+
+    public Optional<T> getSuccessorData(Node<T> node) {
+        if (node == null) {
+            return Optional.empty();
+        }
+        Node<T> successor = successor(node);
+        if (successor == null) {     // Case tree has no right nodes, it will return the parent in
+            return Optional.empty(); // the called function, if the parent is null a null pointer
+        } else {                     // exception will occur without this if
+            return Optional.of(successor.data);
+        }
+    }
+
+    public Optional<T> getPredecessorData(Node<T> node) {
+        if (node == null) {
+            return Optional.empty();
+        }
+        Node<T> predecessor = predecessor(node);
+        if (predecessor == null) {   // Case tree has no left nodes, it will return the parent in
+            return Optional.empty(); // the called function, if the parent is null a null pointer
+        } else {                     // exception will occur without this if
+            return Optional.of(predecessor.data); 
+        }
+    }
+    */
+
+    public void printTree(Node<T> node) {
+        printTreeRec(node, 0);
+    }
+
+    private void printTreeRec(Node<T> node, int level) {
+        if (node != null) {
+            // Print spaces proportional to the level
+            for (int i = 0; i < level; i++) {
+                System.out.print("    ");
+            }
+
+            // Print node data, its height, balance factor, and parent
+            System.out.println(
+                node.data + " Height: " + getHeight(node) +
+                " Balance Factor: " + getBalanceFactor(node) +
+                " Parent: " + ((node.parent == null) ? "null" : node.parent.data)
+            );
+
+            int nextLevel = level + 1;
+
+            // Recursively print left and right subtrees, with increased level
+            if (node.left != null) {
+                printTreeRec(node.left, nextLevel);
+            } else { // If node.left is  is null, print a _ in the place
+                for (int i = 0; i < nextLevel; i++) {
+                    System.out.print("    ");
+                }
+                System.out.println("_");
+            }
+
+            if (node.right != null) {
+                printTreeRec(node.right, nextLevel);
+            } else { // If node.right is  is null, print a _ in the place
+                for (int i = 0; i < nextLevel; i++) {
+                    System.out.print("    ");
+                }
+                System.out.println("_");
+            }
+        }
+    }
+
+    public boolean search(T data) {
+        return iterSearch(root, data);
+    }
+
+    private boolean iterSearch(Node<T> node, T data) {
+        while (node != null) {
+            if (data.compareTo(node.data) == 0) {
+                return true;
+            } else if (data.compareTo(node.data) < 0) {
+                node = node.left;
+            } else {
+                node = node.right;
+            }
+        }
+        return false;
+    }
+
+    private boolean searchRec(Node<T> node, T data) {
+        if (node == null) {
+            return false;
+        }
+
+        if (node.data.compareTo(data) == 0) {
+            return true;
+        }
+
+        /*
+        if (searchRec(node.left, data) == false) {
+            return searchRec(node.right, data);
+        } else {
+            return true;
+        }
+        */
+        return searchRec(node.left, data) || searchRec(node.right, data);
+    }
+
+    // Search algo returning the node to use in other functions in middle of tree, like find the 
+    // minimum of a sub-tree.
+    public Node<T> searchNode(T data) {
+        return iterSearchNode(root, data);
+    }
+
+    private Node<T> searchNodeRec(Node<T> node, T data) {
+        if (node == null) {
+            return null;
+        }
+
+        if (data.compareTo(node.data) == 0) {
+            return node;
+        }
+
+        if (data.compareTo(node.data) < 0) {
+            return searchNodeRec(node.left, data);
+        } else {
+            return searchNodeRec(node.right, data);
+        }
+    }
+
+    private Node<T> iterSearchNode(Node<T> node, T data) {
+        while (node != null) {
+            if (data.compareTo(node.data) == 0) {
+                return node;
+            } else if (data.compareTo(node.data) < 0) {
+                node = node.left;
+            } else {
+                node = node.right;
+            }
+        }
+        return node;
+    }
+
     public void insert(T data) {
         root = insertRec(root, data, null);
     }
@@ -40,13 +316,13 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
         if (cmp < 0) {
             // If the data is less than the node's data, go to the left subtree
             node.left = insertRec(node.left, data, node); // node is now the parent of the newnode
-        } else if (cmp > 0) {                                      // as we go down the tree
+        } else if (cmp > 0) {                             // as we go down the tree
             // If the data is greater than the node's data, go to the right subtree
             node.right = insertRec(node.right, data, node);
         }
 
         setHeight(node);
-        return balance(node);
+        return calculateBalance(node);
     }
 
     public void remove(T data) {
@@ -89,7 +365,7 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
         }
 
         setHeight(node);
-        return balance(node);
+        return calculateBalance(node);
     }
     
     // Remove an entire sub-tree
@@ -118,10 +394,120 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
         }
         
         setHeight(node);
-        return balance(node);
+        return calculateBalance(node);
     }
 
-    private Node<T> balance(Node<T> node) {
+    public void preorder() {
+        preorderRec(root);
+        System.out.println("");
+    }
+
+    private void preorderRec(Node<T> node) {
+        if (node != null) {
+            System.out.print(node.data + " "); // Visit node
+            preorderRec(node.left);            // Visit left subtree
+            preorderRec(node.right);           // Visit right subtree
+        }
+    }
+
+    public void postorder() {
+        postorderRec(root);
+        System.out.println("");
+    }
+
+    private void postorderRec(Node<T> node) {
+        if (node != null) {
+            postorderRec(node.left);           // Visit left subtree
+            postorderRec(node.right);          // Visit right subtree
+            System.out.print(node.data + " "); // Visit node
+        }
+    }
+
+    public void inorder() {
+        inorderRec(root);
+        System.out.println("");
+    }
+
+    private void inorderRec(Node<T> node) {
+        if (node != null) {
+            inorderRec(node.left);             // Visit left subtree
+            System.out.print(node.data + " "); // Visit node
+            inorderRec(node.right);            // Visit right subtree
+        }
+    }
+
+    // Will return a subtree that matches with a given prefix, or null if tree is not of type str
+    public Node<String> prefixMatch(String data, Class<T> type) {
+        if (!String.class.isAssignableFrom(type)) {
+            return null;
+        }
+        return prefixMatch((Node<String>) root, data);
+    }
+
+    public Node<String> prefixMatch(Node<String> node, String data) {
+        if (node == null) {
+            return null;
+        }
+        String nodeData = (String) node.data;
+        int lengthOfData = data.length();
+        String nodeDataSubstring = node.data.substring(0, lengthOfData);
+        if (nodeData.startsWith(data)) {
+            return node;
+        }
+
+        if (data.compareTo(nodeDataSubstring) < 0) {
+            return prefixMatch(node.left, data);
+        } else {
+            return prefixMatch(node.right, data);
+        }
+    }
+
+    public List<String> fuzzySearch(String data, int maxDistance, Class<T> type) {
+        if (!String.class.isAssignableFrom(type)) {
+            return null;
+        }
+        
+        List<String> result = new ArrayList<>();
+        fuzzySearch((Node<String>) root, data, maxDistance, result);
+        return result;
+    }
+
+    private void fuzzySearch(Node<String> node, String data, int maxDistance, List<String> result) {
+        if (node == null) {
+            return;
+        }
+        
+        int distance = levenshteinDistance(data, node.data);
+        if (distance <= maxDistance) {
+            result.add(node.data);
+        }
+        
+        fuzzySearch(node.left, data, maxDistance, result);
+        fuzzySearch(node.right, data, maxDistance, result);
+    }
+
+    private int levenshteinDistance(String a, String b) {
+        int[][] dp = new int[a.length() + 1][b.length() + 1];
+
+        for (int i = 0; i <= a.length(); i++) {
+            for (int j = 0; j <= b.length(); j++) {
+                if (i == 0) {
+                    dp[i][j] = j; // j insertions
+                } else if (j == 0) {
+                    dp[i][j] = i; // i deletions
+                } else if (a.charAt(i - 1) == b.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1]; // No cost if characters are same
+                } else {
+                    dp[i][j] = 1 + Math.min(dp[i - 1][j - 1], // Substitution
+                                   Math.min(dp[i - 1][j],     // Deletion
+                                            dp[i][j - 1]));   // Insertion
+                }
+            }
+        }
+        return dp[a.length()][b.length()];
+    }
+
+    private Node<T> calculateBalance(Node<T> node) {
         int balanceFactor = getBalanceFactor(node);
 
         // Balancing tree
@@ -185,7 +571,7 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
             rightOfLeftNode.parent = node; // 3 is now parent of 4
         }
         leftOfNode.parent = node.parent; // the parent of 4 is now the parent of 2
-        node.parent = leftOfNode; // parent of 4 turns to 2
+        node.parent = leftOfNode; // 2 is now parent of 4
 
         setHeight(node);
         setHeight(leftOfNode);
@@ -239,429 +625,6 @@ public class AVLTreeGeneric<T extends Comparable<T>> {
 
         if (newRoot != null) {
             newRoot.parent = toBeTransplanted.parent;
-        }
-    }
-
-    private void setHeight(Node<T> node) {
-        if (node == null) {
-            return;
-        }
-
-        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
-    }
-
-    public int getHeight(Node<T> node) {
-        if (node == null) {
-            return 0;
-        }
-
-        return node.height;
-    }
-
-    public Optional<T> getRootData() {
-        if (this.root == null) {
-            return Optional.empty();
-        }
-        return Optional.of(this.root.data);
-    }
-
-    public Node<T> getRoot() {
-        return this.root;
-    }
-
-    public Optional<T> getParentData(Node<T> node) {
-        return node.parent != null ? Optional.of(node.parent.data) : Optional.empty();
-    }
-
-    public Node<T> getParent(Node<T> node) {
-        return node != null ? node.parent : null;
-    }
-
-    public void printTree(Node<T> node) {
-        printTreeRec(node, 0);
-    }
-
-    private void printTreeRec(Node<T> node, int level) {
-        if (node != null) {
-            // Print spaces proportional to the level
-            for (int i = 0; i < level; i++) {
-                System.out.print("    ");
-            }
-
-            // Print node data, its height, balance factor, and parent
-            System.out.println(
-                node.data + " Height: " + node.height +
-                " Balance Factor: " + getBalanceFactor(node) +
-                " Parent: " + ((node.parent == null) ? "null" : getParentData(node))
-            );
-
-            int nextLevel = level + 1;
-
-            // Recursively print left and right subtrees, with increased level
-            if (node.left != null) {
-                printTreeRec(node.left, nextLevel);
-            } else { // If node.left is  is null, print a _ in the place
-                for (int i = 0; i < nextLevel; i++) {
-                    System.out.print("    ");
-                }
-                System.out.println("_");
-            }
-
-            if (node.right != null) {
-                printTreeRec(node.right, nextLevel);
-            } else { // If node.right is  is null, print a _ in the place
-                for (int i = 0; i < nextLevel; i++) {
-                    System.out.print("    ");
-                }
-                System.out.println("_");
-            }
-        } else {
-            System.out.println("Tree is empty.");
-        }
-    }
-
-    private int getBalanceFactor(Node<T> node) {
-        if (node == null) {
-            return 0;
-        }
-
-        // return node == null ? 0 : getHeight(node.left) - getHeight(node.right);
-        return getHeight(node.left) - getHeight(node.right);
-    }
-    
-    public int totalNodes(Node<T> node) {
-        if (node == null) {
-            return 0;
-        }
-
-        int left = totalNodes(node.left);
-        int right = totalNodes(node.right);
-        
-        return 1 + left + right;
-    }
-
-    public Optional<T> getMaximumData(Node<T> node) {
-        if (node == null) {
-            return Optional.empty();
-        }
-        Node<T> max = maximum(node);
-        return Optional.of(max.data);
-    }
-
-    public Node<T> maximum(Node<T> node) {
-        if (node == null) {
-            return null;
-        }
-        while (node.right != null) {
-            node = node.right;
-        }
-        return node;
-    }
-
-    public Optional<T> getMinimumData(Node<T> node) {
-        if (node == null) {
-            return Optional.empty();
-        }
-        Node<T> min = minimum(node);
-        return Optional.of(min.data);
-    }
-
-    public Node<T> minimum(Node<T> node) {
-        if (node == null) {
-            return null;
-        }
-        while (node.left != null) {
-            node = node.left;
-        }
-        return node;
-    }
-
-    // Just testing
-    public Node<T> minimumRec(Node<T> node) {
-        if (node == null) {
-            return null;
-        }
-        if (node.left == null) {
-            return node;
-        } else {
-            return minimumRec(node.left);
-        }
-    }
-
-    public Optional<T> getSuccessorData(Node<T> node) {
-        if (node == null) {
-            return Optional.empty();
-        }
-        Node<T> successor = successor(node);
-        if (successor == null) {     // Case tree has no right nodes, it will return the parent in
-            return Optional.empty(); // the called function, if the parent is null a null pointer
-        } else {                     // exception will occur without this if
-            return Optional.of(successor.data);
-        }
-    }
-
-    public Node<T> successor(Node<T> node) {
-        if (node == null) {
-            return null;
-        }
-
-        if (node.right != null) {
-            return minimum(node.right);
-        }
-
-        Node<T> y = node.parent;
-        while (y != null && node == y.right) {
-            node = y;
-            y = y.parent;
-        }
-        return y;
-    }
-
-    public Optional<T> getPredecessorData(Node<T> node) {
-        if (node == null) {
-            return Optional.empty();
-        }
-        Node<T> predecessor = predecessor(node);
-        if (predecessor == null) {   // Case tree has no left nodes, it will return the parent in
-            return Optional.empty(); // the called function, if the parent is null a null pointer
-        } else {                     // exception will occur without this if
-            return Optional.of(predecessor.data); 
-        }
-    }
-
-    public Node<T> predecessor(Node<T> node) {
-        if (node == null) {
-            return null;
-        }
-
-        if (node.left != null) {
-            return maximum(node.left);
-        }
-
-        Node<T> y = node.parent;
-        while (y != null && node == node.left) {
-            node = y;
-            y = y.parent;
-        }
-        return y;
-    }
-
-    public boolean search(T data) {
-        return searchRec(root, data);
-    }
-
-    private boolean searchRec(Node<T> node, T data) {
-        if (node == null) {
-            return false;
-        }
-
-        if (node.data.compareTo(data) == 0) {
-            return true;
-        }
-
-        /*
-        if (searchRec(node.left, data) == false) {
-            return searchRec(node.right, data);
-        } else {
-            return true;
-        }
-        */
-        return searchRec(node.left, data) || searchRec(node.right, data);
-    }
-
-    // Search algo returning the node to use in other functions in middle of tree, like find the 
-    // minimum of a sub-tree.
-    public Node<T> searchNode(T data) {
-        return searchNodeRec(root, data);
-    }
-
-    private Node<T> searchNodeRec(Node<T> node, T data) {
-        if (node == null) {
-            return null;
-        }
-
-        if (data.compareTo(node.data) == 0) {
-            return node;
-        }
-
-        if (data.compareTo(node.data) < 0) {
-            return searchNodeRec(node.left, data);
-        } else {
-            return searchNodeRec(node.right, data);
-        }
-    }
-
-    private Node<T> iterSearchNode(Node<T> node, T data) {
-        while (node != null && data != node.data) {
-            if (data.compareTo(node.data) < 0) {
-                node = node.left;
-            } else {
-                node = node.right;
-            }
-        }
-        return node;
-    }
-
-    // Will return a subtree that matches with a given prefix, or null if tree is not of type str
-    public Node<String> prefixMatch(String data, Class<T> type) {
-        if (!String.class.isAssignableFrom(type)) {
-            return null;
-        }
-        return prefixMatch((Node<String>) root, data);
-    }
-
-    public Node<String> prefixMatch(Node<String> node, String data) {
-        if (node == null) {
-            return null;
-        }
-        String nodeData = (String) node.data;
-        nodeData = nodeData.toLowerCase();
-        int lengthOfData = data.length();
-        String nodeDataSubstring = node.data.substring(0, lengthOfData);
-        if (nodeData.startsWith(data)) {
-            return node;
-        }
-
-        if (data.compareTo(nodeDataSubstring) < 0) {
-            return prefixMatch(node.left, data);
-        } else {
-            return prefixMatch(node.right, data);
-        }
-    }
-
-    public List<String> fuzzySearch(String data, int maxDistance, Class<T> type) {
-        if (!String.class.isAssignableFrom(type)) {
-            return null;
-        }
-        
-        List<String> result = new ArrayList<>();
-        fuzzySearch((Node<String>) root, data, maxDistance, result);
-        return result;
-    }
-
-    private void fuzzySearch(Node<String> node, String data, int maxDistance, List<String> result) {
-        if (node == null) {
-            return;
-        }
-        
-        int distance = levenshteinDistance(data, node.data);
-        if (distance <= maxDistance) {
-            result.add(node.data);
-        }
-        
-        fuzzySearch(node.left, data, maxDistance, result);
-        fuzzySearch(node.right, data, maxDistance, result);
-    }
-
-    private int levenshteinDistance(String a, String b) {
-        int[][] dp = new int[a.length() + 1][b.length() + 1];
-
-        for (int i = 0; i <= a.length(); i++) {
-            for (int j = 0; j <= b.length(); j++) {
-                if (i == 0) {
-                    dp[i][j] = j; // j insertions
-                } else if (j == 0) {
-                    dp[i][j] = i; // i deletions
-                } else if (a.charAt(i - 1) == b.charAt(j - 1)) {
-                    dp[i][j] = dp[i - 1][j - 1]; // No cost if characters are same
-                } else {
-                    dp[i][j] = 1 + Math.min(dp[i - 1][j - 1], // Substitution
-                                   Math.min(dp[i - 1][j],     // Deletion
-                                            dp[i][j - 1]));   // Insertion
-                }
-            }
-        }
-        return dp[a.length()][b.length()];
-    }
-
-    public void preorder() {
-        preorderRec(root);
-        System.out.println("");
-    }
-
-    private void preorderRec(Node<T> node) {
-        if (node != null) {
-            System.out.print(node.data + " "); // Visit node
-            preorderRec(node.left);            // Visit left subtree
-            preorderRec(node.right);           // Visit right subtree
-        }
-    }
-
-    public void postorder() {
-        postorderRec(root);
-        System.out.println("");
-    }
-
-    private void postorderRec(Node<T> node) {
-        if (node != null) {
-            postorderRec(node.left);           // Visit left subtree
-            postorderRec(node.right);          // Visit right subtree
-            System.out.print(node.data + " "); // Visit node
-        }
-    }
-
-    public void inorder() {
-        inorderRec(root);
-        System.out.println("");
-    }
-
-    private void inorderRec(Node<T> node) {
-        if (node != null) {
-            inorderRec(node.left);             // Visit left subtree
-            System.out.print(node.data + " "); // Visit node
-            inorderRec(node.right);            // Visit right subtree
-        }
-    }
-
-    public void printBrotherData(Node<T> node) {
-        if (node.parent == null) {
-            System.out.print("");
-        } else {
-            if (node.parent.left == node) {
-                if (node.parent.right != null) {
-                    System.out.print(node.parent.right.data);
-                } else {
-                    System.out.print("");
-                }
-            } else if (node.parent.right == node) {
-                if (node.parent.left != null) {
-                    System.out.print(node.parent.left.data);
-                } else {
-                    System.out.print("");
-                }
-            }
-        }
-    }
-
-    public void printParentData(Node<T> node) {
-        if (node.parent == null) {
-            System.out.print("");
-        } else {
-            System.out.print(node.parent.data);    
-        }
-    }
-
-    public void printLeftData(Node<T> node) {
-        if (node.left == null) {
-            System.out.print("");
-        } else {
-            System.out.print(node.left.data);
-        }
-    }
-
-    public void printRightData(Node<T> node) {
-        if (node.right == null) {
-            System.out.print("");
-        } else {
-            System.out.print(node.right.data);
-        }
-    }
-
-    public void printCurrentData(Node<T> node) {
-        if (node == null) {
-            System.out.print("");
-        } else {
-            System.out.print(node.data);
         }
     }
 }
