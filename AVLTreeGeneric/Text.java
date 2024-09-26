@@ -17,8 +17,8 @@ public class Text {
             "Options:[1] Print tree. [7] Inorder.           [12] Mass insert.\n" +
             "        [2] Search.     [8] Help.              [13] Mass delete subtree.\n" +
             "        [3] Insert.     [9] Exit.              [14] Print before operations.\n" +
-            "        [4] Remove.     [0] Clearscreen.       [15] Fuzzy search.\n" +
-            "        [5] Preorder.   [10] Info of a node.   [16] Prefix search.\n" +
+            "        [4] Remove.     [0] Clearscreen.       [15] Prefix search.\n" +
+            "        [5] Preorder.   [10] Info of a node.   [16] Fuzzy search.\n" +
             "        [6] Postorder.  [11] Print a sub-tree. [17] Manually walk the tree.\n" +
             "---------------------------------------------------------------------------------\n"
         );
@@ -165,7 +165,7 @@ Start with:
     13 (find parent)
 -> 7 (13 == parent's right? yes, move up)
 -> 6 (7 == parent's right? yes, move up)
--> 15 (6 == parent's left? stop!)
+-> 15 (6 == parent's left? stop)
 Successor is 15
 Conclusion
 Right Subtree Absent: Traverse upward using parent pointers until you find an ancestor that is not
