@@ -44,6 +44,7 @@ public class Text {
         }
     }
 
+    // Tried a wrapper for nextLine, doesn't work
     public String getNextLine() {
         try {
             return scanner.nextLine();
@@ -127,16 +128,18 @@ Step 2: Perform a left rotation on the node itself to balance the newly formed r
 structure.
 
 Successor/antecessor logic:
-successor logic when given node doesn't has a right tree
+Right Subtree Absent: Traverse upward using parent pointers until you find an ancestor that is not
+the right child of its parent.
+successor logic when given node doesn't have a right tree
         15
        /  \
-     6     18
-    / \    / \
-   3   7  17  20
-  / \   \
- 2  4   13
-        /
-       9
+      6    18
+     / \   / \
+    3   7 17  20
+   / \   \
+  2   4   13
+         /
+        9
 
 Start with x = 13.
 
@@ -154,7 +157,6 @@ Move up: y = 15 (parent of 6).
 Successor of 13: Node 15.
 
 When Node x Does Not Have a Right Subtree:
-
 Traverse the ancestors until you find one that is not a right child.
  Step-by-step for 13:
  13 → up to 7 → up to 6 → up to 15 (left child of 15)
@@ -165,9 +167,6 @@ Start with:
     13 (find parent)
 -> 7 (13 == parent's right? yes, move up)
 -> 6 (7 == parent's right? yes, move up)
--> 15 (6 == parent's left? stop)
+-> 15 (6 == parent's left? no, stop)
 Successor is 15
-Conclusion
-Right Subtree Absent: Traverse upward using parent pointers until you find an ancestor that is not
-the right child of its parent.
 */
