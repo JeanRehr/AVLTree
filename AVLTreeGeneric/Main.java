@@ -11,12 +11,13 @@ public class Main {
     public static void main(String[] args) {
         Text text = new Text();
         Scanner scanner = new Scanner(System.in);
-        short choice = 0;
+        // the scope of the trees are in the Main function
         AVLTreeGeneric<Integer> intTree = new AVLTreeGeneric<>();
         AVLTreeGeneric<String> stringTree = new AVLTreeGeneric<>();
         AVLTreeGeneric<Character> charTree = new AVLTreeGeneric<>();
         AVLTreeGeneric<Double> doubleTree = new AVLTreeGeneric<>();
 
+        short choice = 0;
         while (choice != 5) {
             System.out.print(
                 "Choose the type of the tree:\n" +
@@ -54,7 +55,6 @@ public class Main {
         Class<T> type,
         Text text
     ) {
-        int intervalsToInsert = 0;
         boolean printBeforeAfter = false;
         T userValue = null;
         short userOpt = 100;
@@ -62,18 +62,18 @@ public class Main {
         while (userOpt != 9) {
             text.options();
 
-            userOpt = text.getUserOption((short) 0, (short) 17);
+            userOpt = text.getUserOption((short) 0, (short) 18);
 
             switch (userOpt) {
             case 1: // Print Tree
-                if (isTreeEmpty(tree)) {
+                if (tree.treeIsEmpty(tree)) {
                     System.out.println("Tree is empty.");
                     break;
                 }
                 tree.printTree(tree.getRoot());
                 break;
             case 2: // Search
-                if (isTreeEmpty(tree)) {
+                if (tree.treeIsEmpty(tree)) {
                     System.out.println("Tree is empty.");
                     break;
                 }
@@ -105,7 +105,7 @@ public class Main {
                 tree.printTree(tree.getRoot());        
                 break;
             case 4: // Remove
-                if (isTreeEmpty(tree)) {
+                if (tree.treeIsEmpty(tree)) {
                     System.out.println("Tree is empty.");
                     break;
                 }
@@ -125,21 +125,21 @@ public class Main {
                 tree.printTree(tree.getRoot());
                 break;
             case 5: // Preorder
-                if (isTreeEmpty(tree)) {
+                if (tree.treeIsEmpty(tree)) {
                     System.out.println("Tree is empty.");
                     break;
                 }
                 tree.preorder();
                 break;
             case 6: // Postorder
-                if (isTreeEmpty(tree)) {
+                if (tree.treeIsEmpty(tree)) {
                     System.out.println("Tree is empty.");
                     break;
                 }
                 tree.postorder();
                 break;
             case 7: // Inorder
-                if (isTreeEmpty(tree)) {
+                if (tree.treeIsEmpty(tree)) {
                     System.out.println("Tree is empty.");
                     break;
                 }
@@ -156,7 +156,7 @@ public class Main {
                 text.clearConsole();
                 break;
             case 10: // Print Info
-                if (isTreeEmpty(tree)) {
+                if (tree.treeIsEmpty(tree)) {
                     System.out.println("Tree is empty.");
                     break;
                 }
@@ -197,7 +197,7 @@ public class Main {
                 );
                 break;
             case 11: // Print sub-tree
-                if (isTreeEmpty(tree)) {
+                if (tree.treeIsEmpty(tree)) {
                     System.out.println("Tree is empty.");
                     break;
                 }
@@ -252,7 +252,7 @@ public class Main {
                 }
                 break;
             case 13: // Mass Delete
-                if (isTreeEmpty(tree)) {
+                if (tree.treeIsEmpty(tree)) {
                     System.out.println("Tree is empty.");
                     break;
                 }
@@ -278,7 +278,7 @@ public class Main {
                 System.out.println("Print before operations: " + printBeforeAfter);
                 break;
             case 15: // Prefix match - prints the subtree that matches a given prefix
-                if (isTreeEmpty(tree)) {
+                if (tree.treeIsEmpty(tree)) {
                     System.out.println("Tree is empty.");
                     break;
                 }
@@ -292,7 +292,7 @@ public class Main {
                 tree.printTree((Node<T>) tree.prefixMatch(scanner.nextLine(), type));
                 break;
             case 16: // Fuzzy search
-                if (isTreeEmpty(tree)) {
+                if (tree.treeIsEmpty(tree)) {
                     System.out.println("Tree is empty.");
                     break;
                 }
@@ -318,7 +318,7 @@ public class Main {
                 }
                 break;
             case 17: // Manually walk the tree.
-                if (isTreeEmpty(tree)) {
+                if (tree.treeIsEmpty(tree)) {
                     System.out.println("Tree is empty.");
                     break;
                 }
@@ -341,12 +341,24 @@ public class Main {
                     
                     currentNode = walk(tree, currentNode, opt); // current node gets assigned
                 }                                               // to a direction depending on opt
+                break;
+            case 18:
+                System.out.println("1: minimum iter\n2: minimum rec");
+                short test = text.getUserOption((short) 1, (short) 2);
+                if (test == 1) {
+                    long startTime = System.nanoTime();
+                    System.out.println(tree.nodeDataToString(tree.minimum(tree.getRoot())));
+                    long endTime = System.nanoTime();
+                    System.out.println("Duration: " + ((endTime - startTime) / 1000000) + "ms");
+                } else if (test == 2) {
+                    long startTime = System.nanoTime();
+                    System.out.println(tree.nodeDataToString(tree.minimumRec(tree.getRoot())));
+                    long endTime = System.nanoTime();
+                    System.out.println("Duration: " + ((endTime - startTime) / 1000000) + "ms");
+                }
+                break;
             }
         }
-    }
-
-    public static boolean isTreeEmpty(AVLTreeGeneric tree) {
-        return tree.getRoot() == null ? true : false;
     }
 
     // Representing the tree with parent, brother and children
@@ -355,16 +367,16 @@ public class Main {
         AVLTreeGeneric<T> tree
     ) {
         System.out.print("\t  " + tree.nodeDataToString(node.parent) + "\n");
-        if (node.parent == null) {
+        if (tree.nodeIsNull(node.parent)) {
             System.out.print("\n          " + tree.nodeDataToString(node));
             System.out.print("        H: " + tree.getHeight(node));
         } else {
-            if (node.parent.left == node && node.parent.right != null) {
+            if (tree.nodesEquals(node.parent.left, node) && !tree.nodeIsNull(node.parent.right)) {
                 System.out.print("\t  | \\\n");
                 System.out.print("          " + tree.nodeDataToString(node));
                 System.out.print("  " + tree.nodeDataToString(node.parent.right));
                 System.out.print("            H: " + tree.getHeight(node));
-            } else if (node.parent.right == node && node.parent.left != null) {
+            } else if (tree.nodesEquals(node.parent.right, node) && !tree.nodeIsNull(node.parent.left)) {
                 System.out.print("\t /|\n");
                 System.out.print("       " + tree.nodeDataToString(node.parent.left));
                 System.out.print(" " + tree.nodeDataToString(node));
@@ -376,11 +388,11 @@ public class Main {
             }
         }
         System.out.print("\n");
-        if (node.left != null && node.right != null) {
+        if (!tree.nodeIsNull(node.left) && !tree.nodeIsNull(node.right)) {
             System.out.print("\t /  \\\n");
-        } else if (node.left != null && node.right == null) {
+        } else if (!tree.nodeIsNull(node.left) && tree.nodeIsNull(node.right)) {
             System.out.print("\t /\n");
-        } else if (node.left == null && node.right != null) {
+        } else if (tree.nodeIsNull(node.left) && !tree.nodeIsNull(node.right)) {
             System.out.print("\t   \\\n");
         } else {
             System.out.print("\n");
@@ -428,11 +440,11 @@ public class Main {
         System.out.print("Max number to stop insertions> ");
         int endNumber = text.getInt();
         int intervals = 0;
-        while (intervals == 0) {
+        while (intervals <= 0) {
             System.out.print("Intervals in numbers of> ");
             intervals = text.getInt();
-            if (intervals == 0) {
-                System.out.println("Intervals can't be 0.");
+            if (intervals <= 0) {
+                System.out.println("Intervals can't be <= 0.");
             }
         }
         System.out.println(
