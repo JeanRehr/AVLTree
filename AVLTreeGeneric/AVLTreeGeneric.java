@@ -1,555 +1,709 @@
-import java.util.Scanner;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main {
-    public static void main(String[] args) {
-        Text text = new Text();
-        Scanner scanner = new Scanner(System.in);
-        // the scope of the trees are in the Main function
-        AVLTreeGeneric<Integer> intTree = new AVLTreeGeneric<>();
-        AVLTreeGeneric<String> stringTree = new AVLTreeGeneric<>();
-        AVLTreeGeneric<Character> charTree = new AVLTreeGeneric<>();
-        AVLTreeGeneric<Double> doubleTree = new AVLTreeGeneric<>();
+class Node<T> {
+    T data;
+    int height;
+    Node<T> left;
+    Node<T> right;
+    Node<T> parent;
 
-        short choice = 0;
-        while (choice != 5) {
-            System.out.print(
-                "Choose the type of the tree:\n" +
-                "1 - Integer.\n" +
-                "2 - String.\n" +
-                "3 - Character.\n" +
-                "4 - Double.\n" +
-                "5 - Exit.\n" 
-            );
-            choice = text.getUserOption((short) 1, (short) 5);
-            switch (choice) {
-            case 1:
-                interactWithTree(intTree, scanner, Integer.class, text);
-                break;
-            case 2:
-                interactWithTree(stringTree, scanner, String.class, text);
-                break;
-            case 3:
-                interactWithTree(charTree, scanner, Character.class, text);
-                break;
-            case 4:
-                interactWithTree(doubleTree, scanner, Double.class, text);
-                break;
-            case 5:
-                break;
-            default:
-                System.out.println("Invalid option.");
-            }
-        }
-        scanner.close();
+    public Node(T data) {
+        this.data = data;
+        this.height = 1;
     }
-    private static <T extends Comparable<T>> void interactWithTree(
-        AVLTreeGeneric<T> tree,
-        Scanner scanner,
-        Class<T> type,
-        Text text
-    ) {
-        boolean printBeforeAfter = false;
-        T userValue = null;
-        short userOpt = 100;
+}
 
-        while (userOpt != 9) {
-            text.options();
+public class AVLTreeGeneric<T extends Comparable<T>> {
+    Node<T> root;  // The root node of the tree
 
-            userOpt = text.getUserOption((short) 0, (short) 18);
+    public int getHeight(Node<T> node) {
+        if (node == null) {
+            return 0;
+        }
 
-            switch (userOpt) {
-            case 1: // Print Tree
-                if (tree.treeIsEmpty(tree)) {
-                    System.out.println("Tree is empty.");
-                    break;
-                }
-                tree.printTree(tree.getRoot());
-                break;
-            case 2: // Search
-                if (tree.treeIsEmpty(tree)) {
-                    System.out.println("Tree is empty.");
-                    break;
-                }
+        return node.height;
+    }
 
-                System.out.print("Enter value to search> ");
-                userValue = text.parseValue(scanner.nextLine(), type);
+    private void setHeight(Node<T> node) {
+        if (node == null) {
+            return;
+        }
 
-                if (userValue == null) {
-                    System.out.println("Invalid input for " + type.getSimpleName());
-                    break;
-                }
+        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
+    }
 
-                System.out.println((tree.search(userValue)) ? "Data found." : "Not found.");   
-                break;
-            case 3: // Insert
-                System.out.print("Enter value to insert> ");
-                userValue = text.parseValue(scanner.nextLine(), type);
-                if (printBeforeAfter) {
-                    System.out.println("Tree before operation:");
-                    tree.printTree(tree.getRoot());
-                }
-                if (userValue == null) {
-                    System.out.println("Invalid input for " + type.getSimpleName());
-                    break;
-                }
+    public Node<T> getRoot() {
+        return this.root;
+    }
+
+    private int getBalanceFactor(Node<T> node) {
+        if (node == null) {
+            return 0;
+        }
+
+        // return node == null ? 0 : getHeight(node.left) - getHeight(node.right);
+        return getHeight(node.left) - getHeight(node.right);
+    }
+
+    public int getTotalNodes(Node<T> node) {
+        if (node == null) {
+            return 0;
+        }
+
+        int left = getTotalNodes(node.left);
+        int right = getTotalNodes(node.right);
         
-                tree.insert(userValue);
-                System.out.println("Tree after operation:");
-                tree.printTree(tree.getRoot());        
-                break;
-            case 4: // Remove
-                if (tree.treeIsEmpty(tree)) {
-                    System.out.println("Tree is empty.");
-                    break;
-                }
-                System.out.print("Remove which value> ");
-                userValue = text.parseValue(scanner.nextLine(), type);
-                if (printBeforeAfter) {
-                    System.out.println("Tree before operation:");
-                    tree.printTree(tree.getRoot());
-                }
-                if (userValue == null) {
-                    System.out.println("Invalid input for " + type.getSimpleName());
-                    break;
-                }
-
-                tree.remove(userValue);
-                System.out.println("Tree after operation:");
-                tree.printTree(tree.getRoot());
-                break;
-            case 5: // Preorder
-                if (tree.treeIsEmpty(tree)) {
-                    System.out.println("Tree is empty.");
-                    break;
-                }
-                tree.preorder();
-                break;
-            case 6: // Postorder
-                if (tree.treeIsEmpty(tree)) {
-                    System.out.println("Tree is empty.");
-                    break;
-                }
-                tree.postorder();
-                break;
-            case 7: // Inorder
-                if (tree.treeIsEmpty(tree)) {
-                    System.out.println("Tree is empty.");
-                    break;
-                }
-                tree.inorder();
-                break;
-            case 8: // Help
-                System.out.println(
-                    "AVL Tree implemented in Java, currently, this tree is of type: " + type + "."
-                );
-                break;
-            case 9: // Exit
-                break;
-            case 0: // Clear Console
-                text.clearConsole();
-                break;
-            case 10: // Print Info
-                if (tree.treeIsEmpty(tree)) {
-                    System.out.println("Tree is empty.");
-                    break;
-                }
-
-                System.out.print(
-                    "Info based on which node (root is: " +
-                    tree.nodeDataToString(tree.getRoot()) + ")> "
-                );
-                userValue = text.parseValue(scanner.nextLine(), type);
-
-                if (userValue == null) {
-                    System.out.println("Invalid input for " + type.getSimpleName());
-                    break;
-                }
-
-                Node<T> subTreeNode = tree.searchNode(userValue);
-
-                if (subTreeNode == null) {
-                    System.out.println("Data/sub-tree not found.");
-                    break;
-                }
-
-                System.out.println(
-                    "Minimum of sub-tree: " +
-                    tree.nodeDataToString(tree.minimum(subTreeNode)) +
-                    "\nMaximum of sub-tree: " +
-                    tree.nodeDataToString(tree.maximum(subTreeNode)) +
-                    "\nRoot of the sub-tree: " +
-                    userValue +
-                    "\nSuccessor of sub-tree: " +
-                    tree.nodeDataToString(tree.successor(subTreeNode)) +
-                    "\nPredecessor of sub-tree: " +
-                    tree.nodeDataToString(tree.predecessor(subTreeNode)) +
-                    "\nRoot of the entire tree: " +
-                    tree.nodeDataToString(tree.getRoot()) +
-                    "\nTotal nodes in this sub-tree: " +
-                    tree.getTotalNodes(subTreeNode)
-                );
-                break;
-            case 11: // Print sub-tree
-                if (tree.treeIsEmpty(tree)) {
-                    System.out.println("Tree is empty.");
-                    break;
-                }
-
-                System.out.print("Print from which sub-tree> ");
-                userValue = text.parseValue(scanner.nextLine(), type);
-                
-                if (userValue == null) {
-                    System.out.println("Invalid input for " + type.getSimpleName());
-                    break;
-                }
-
-                Node<T> subTree = tree.searchNode(userValue);
-
-                if (subTree == null) {
-                    System.out.println("Data/sub-tree not found.");
-                    break;
-                }
-
-                tree.printTree(subTree);
-                break;
-            case 12: // Mass Insert
-                if (String.class.isAssignableFrom(type)) {
-                    System.out.print(
-                        "Insert:\n" +
-                        "1 - Numbers.\n" +
-                        "2 - Characters.\n" +
-                        "3 - Words.\n"
-                    );
-                    short insertOption = text.getUserOption((short) 1, (short) 3);
-                    if (insertOption == 1) {
-                        massInsertNumbers(text, tree, type);
-                    } else if (insertOption == 2) {
-                        massInsertChar(text, tree, type);
-                    } else {
-                        massInsertWords(text, tree, type, scanner);
-                    }
-                } else if (Character.class.isAssignableFrom(type)) {
-                    System.out.print(
-                        "Insert:\n" +
-                        "1 - Numbers.\n" +
-                        "2 - Characters.\n"
-                    );
-                    short insertOption = text.getUserOption((short) 1, (short) 2);
-                    if (insertOption == 1) {
-                        massInsertNumbers(text, tree, type);
-                    } else {
-                    massInsertChar(text, tree, type);
-                    }
-                } else {
-                    massInsertNumbers(text, tree, type);
-                }
-                break;
-            case 13: // Mass Delete
-                if (tree.treeIsEmpty(tree)) {
-                    System.out.println("Tree is empty.");
-                    break;
-                }
-
-                System.out.print("Delete which sub-tree (Root is: " + tree.nodeDataToString(tree.getRoot()) + ")> ");
-                
-                userValue = text.parseValue(scanner.nextLine(), type);
-                
-                if (printBeforeAfter) {
-                    System.out.println("Tree before operation:");
-                    tree.printTree(tree.getRoot());
-                }
-
-                if (userValue == null) {
-                    System.out.println("Invalid input for " + type.getSimpleName());
-                    break;
-                }
-
-                tree.massRemove(userValue);
-                break;
-            case 14: // Before print statements
-                printBeforeAfter = !printBeforeAfter;
-                System.out.println("Print before operations: " + printBeforeAfter);
-                break;
-            case 15: // Prefix match - prints the subtree that matches a given prefix
-                if (tree.treeIsEmpty(tree)) {
-                    System.out.println("Tree is empty.");
-                    break;
-                }
-
-                if (!String.class.isAssignableFrom(type)) {
-                    System.out.println("This operation only works with String trees");
-                    break;
-                }
-
-                System.out.print("Search words that starts with (case-sensitive)> ");
-                tree.printTree((Node<T>) tree.prefixMatch(scanner.nextLine(), type));
-                break;
-            case 16: // Fuzzy search
-                if (tree.treeIsEmpty(tree)) {
-                    System.out.println("Tree is empty.");
-                    break;
-                }
-
-                if (!String.class.isAssignableFrom(type)) {
-                    System.out.println("This operation only works with String trees");
-                    break;
-                }
-                
-                System.out.print("Search words that are similar with (case-sensitive)> ");
-                String word = scanner.nextLine();
-                
-                System.out.print("How similar on a number scale (0 = very similar)> ");
-                int similarity = text.getInt();
-                
-                List<String> fuzzyWords = new ArrayList<>();
-                
-                fuzzyWords = tree.fuzzySearch(word, similarity, type);
-
-                System.out.println("Result:");
-                for (int i = 0; i < fuzzyWords.size(); i++) {
-                    System.out.println(fuzzyWords.get(i));
-                }
-                break;
-            case 17: // Manually walk the tree.
-                if (tree.treeIsEmpty(tree)) {
-                    System.out.println("Tree is empty.");
-                    break;
-                }
-
-                Node<T> currentNode = tree.getRoot(); // starts at root
-
-                short opt = 0;
-                while (opt != 4) {
-                    treeRepresentation(currentNode, tree);
-    
-                    System.out.print(
-                        "Walk:\n" +
-                        "1 - Left.\n" +
-                        "2 - Up.\n" +
-                        "3 - Right.\n" +
-                        "4 - Exit.\n"
-                    );
-
-                    opt = text.getUserOption((short) 1, (short) 4);
-                    
-                    currentNode = walk(tree, currentNode, opt); // current node gets assigned
-                }                                               // to a direction depending on opt
-                break;
-            case 18:
-                System.out.println("1: minimum iter\n2: minimum rec");
-                short test = text.getUserOption((short) 1, (short) 2);
-                if (test == 1) {
-                    long startTime = System.nanoTime();
-                    System.out.println(tree.nodeDataToString(tree.minimum(tree.getRoot())));
-                    long endTime = System.nanoTime();
-                    System.out.println("Duration: " + ((endTime - startTime) / 1000000) + "ms");
-                } else if (test == 2) {
-                    long startTime = System.nanoTime();
-                    System.out.println(tree.nodeDataToString(tree.minimumRec(tree.getRoot())));
-                    long endTime = System.nanoTime();
-                    System.out.println("Duration: " + ((endTime - startTime) / 1000000) + "ms");
-                }
-                break;
-            }
-        }
+        return 1 + left + right;
     }
 
-    // Representing the tree with parent, brother and children
-    public static <T extends Comparable<T>> void treeRepresentation(
-        Node<T> node,
-        AVLTreeGeneric<T> tree
-    ) {
-        System.out.print("\t  " + tree.nodeDataToString(node.parent) + "\n");
-        if (tree.nodeIsNull(node.parent)) {
-            System.out.print("\n          " + tree.nodeDataToString(node));
-            System.out.print("        H: " + tree.getHeight(node));
-        } else {
-            if (tree.nodesEquals(node.parent.left, node) && !tree.nodeIsNull(node.parent.right)) {
-                System.out.print("\t  | \\\n");
-                System.out.print("          " + tree.nodeDataToString(node));
-                System.out.print("  " + tree.nodeDataToString(node.parent.right));
-                System.out.print("            H: " + tree.getHeight(node));
-            } else if (tree.nodesEquals(node.parent.right, node) && !tree.nodeIsNull(node.parent.left)) {
-                System.out.print("\t /|\n");
-                System.out.print("       " + tree.nodeDataToString(node.parent.left));
-                System.out.print(" " + tree.nodeDataToString(node));
-                System.out.print("            H: " + tree.getHeight(node));
-            } else {
-                System.out.print("\t  |\n");
-                System.out.print("         " + tree.nodeDataToString(node));
-                System.out.print("            H: " + tree.getHeight(node));
-            }
+    public Node<T> maximum(Node<T> node) {
+        if (node == null) {
+            return null;
         }
-        System.out.print("\n");
-        if (!tree.nodeIsNull(node.left) && !tree.nodeIsNull(node.right)) {
-            System.out.print("\t /  \\\n");
-        } else if (!tree.nodeIsNull(node.left) && tree.nodeIsNull(node.right)) {
-            System.out.print("\t /\n");
-        } else if (tree.nodeIsNull(node.left) && !tree.nodeIsNull(node.right)) {
-            System.out.print("\t   \\\n");
-        } else {
-            System.out.print("\n");
-        }
-        System.out.print("\t" + tree.nodeDataToString(node.left));
-        System.out.print("   " + tree.nodeDataToString(node.right) + "\n");
-    }
-
-    // Returns the current node where it is going
-    public static <T extends Comparable<T>> Node<T> walk(
-        AVLTreeGeneric<T> tree,
-        Node<T> node,
-        short opt
-    ) {
-        if (opt == 1) {
-            if (node.left == null) {
-                System.out.println("*** Left is null. ***");
-                return node;
-            }
-            return node.left;
-        } else if (opt == 2) {
-            if (node.parent == null) {
-                System.out.println("*** Parent is null. ***");
-                return node;
-            }
-            return node.parent;
-        } else if (opt == 3) {
-            if (node.right == null) {
-                System.out.println("*** Right is null. ***");
-                return node;
-            }
-            return node.right;
+        while (node.right != null) {
+            node = node.right;
         }
         return node;
     }
 
-    public static <T extends Comparable<T>> void massInsertNumbers(
-        Text text,
-        AVLTreeGeneric<T> tree,
-        Class<T> type
-        ) {
-        T valueToBeInserted = null;
-        System.out.print("Start the insertion at what number> ");
-        int startNumber = text.getInt();
-        System.out.print("Max number to stop insertions> ");
-        int endNumber = text.getInt();
-        int intervals = 0;
-        while (intervals <= 0) {
-            System.out.print("Intervals in numbers of> ");
-            intervals = text.getInt();
-            if (intervals <= 0) {
-                System.out.println("Intervals can't be <= 0.");
-            }
+
+    public Node<T> minimum(Node<T> node) {
+        if (node == null) {
+            return null;
         }
-        System.out.println(
-            "Inserting " + startNumber +
-            " to " + endNumber +
-            " in intervals of " + intervals + "."
-        );
-        for (int i = startNumber; i <= endNumber; i = i + intervals) {
-            valueToBeInserted = text.parseValue(String.valueOf(i), type);
-            tree.insert(valueToBeInserted);
+        while (node.left != null) {
+            node = node.left;
         }
+        return node;
     }
 
-    public static <T extends Comparable <T>> void massInsertChar(
-        Text text,
-        AVLTreeGeneric<T> tree,
-        Class<T> type
-    ) {
-        T valueToBeInserted = null;
-        
-        System.out.print(
-            "Insert:\n" +
-            "1 - Uppercase.\n" +
-            "2 - Lowercase.\n"
-        );
-        int opt = text.getUserOption((short) 1, (short) 2);
-        if (opt == 1) {
-            for (int asciiValue = 65; asciiValue < 91; asciiValue++) {
-                char asciiChar = (char) asciiValue;
-                valueToBeInserted = text.parseValue(String.valueOf(asciiChar), type);
-                tree.insert(valueToBeInserted);
-            }
-        } else if (opt == 2) {
-            for (int asciiValue = 97; asciiValue < 123; asciiValue++) {
-                char asciiChar = (char) asciiValue;
-                valueToBeInserted = text.parseValue(String.valueOf(asciiChar), type);
-                tree.insert(valueToBeInserted);
-            }
+    // Just testing
+    public Node<T> minimumRec(Node<T> node) {
+        if (node == null) {
+            return null;
         }
-    }
-
-    public static <T extends Comparable<T>> void massInsertWords(
-        Text text,
-        AVLTreeGeneric<T> tree,
-        Class<T> type,
-        Scanner scanner
-    ) {
-        if (!String.class.isAssignableFrom(type)) {
-            System.out.println("Only String Trees are accepted for this operation.");
-            return;
-        }
-        
-        String path;
-
-        System.out.println(
-            "Load 274926 English words?\n" +
-            "1 - Yes (this is not a fast operation).\n" +
-            "2 - No (will load the words that starts with a and b).\n" +
-            "3 - Load a file of words (must be separated by new lines).\n" +
-            "4 - Cancel."
-        );
-
-        int opt = text.getUserOption((short) 1, (short) 4);
-
-        if (opt == 1) {
-            path = "all_words_less.txt";
-        } else if (opt == 2) {
-            path = "a_b_english.txt";
-        } else if (opt == 3) {
-            System.out.print("File name> ");
-            path = scanner.nextLine();
+        if (node.left == null) {
+            return node;
         } else {
+            return minimumRec(node.left);
+        }
+    }
+
+    public Node<T> successor(Node<T> node) {
+        if (node == null) {
+            return null;
+        }
+
+        if (node.right != null) {
+            return minimum(node.right);
+        }
+
+        // Case node has no right child
+        Node<T> y = node.parent; // get the parent of the node
+        // while it has a parent and the current node is child on the right
+        while (y != null && node == y.right) {
+            // go up the tree
+            node = y;
+            y = y.parent;
+        }
+        return y;
+    }
+
+    public Node<T> predecessor(Node<T> node) {
+        if (node == null) {
+            return null;
+        }
+
+        if (node.left != null) {
+            return maximum(node.left);
+        }
+
+        Node<T> y = node.parent;
+        while (y != null && node == node.left) {
+            node = y;
+            y = y.parent;
+        }
+        return y;
+    }
+
+    public String nodeDataToString(Node<T> node) {
+        return node == null ? "" : node.data.toString();
+    }
+
+    public boolean nodeIsNull(Node<T> node) {
+        return node == null ? true : false;
+    }
+
+    public boolean treeIsEmpty(AVLTreeGeneric<T> tree) {
+        return tree.getRoot() == null ? true : false;
+    }
+
+    public boolean nodesEquals(Node<T> node1, Node<T> node2) {
+        return node1 == node2 ? true : false;
+    }
+
+    /* These fn returns the data in an Optional[data] format, use the nodeDataToString instead */
+    /*
+    public Optional<T> getNodeData(Node<T> node) {
+        return node == null ? Optional.empty() : Optional.of(node.data);
+    }
+
+    public Optional<T> getRootData() {
+        if (this.root == null) {
+            return Optional.empty();
+        }
+        return Optional.of(this.root.data);
+    }
+
+    public Optional<T> getMaximumData(Node<T> node) {
+        if (node == null) {
+            return Optional.empty();
+        }
+        Node<T> max = maximum(node);
+        return Optional.of(max.data);
+    }
+
+    public Optional<T> getMinimumData(Node<T> node) {
+        if (node == null) {
+            return Optional.empty();
+        }
+        Node<T> min = minimum(node);
+        return Optional.of(min.data);
+    }
+
+    public Optional<T> getSuccessorData(Node<T> node) {
+        if (node == null) {
+            return Optional.empty();
+        }
+        Node<T> successor = successor(node);
+        if (successor == null) {     // Case tree has no right nodes, it will return the parent in
+            return Optional.empty(); // the called function, if the parent is null a null pointer
+        } else {                     // exception will occur without this if
+            return Optional.of(successor.data);
+        }
+    }
+
+    public Optional<T> getPredecessorData(Node<T> node) {
+        if (node == null) {
+            return Optional.empty();
+        }
+        Node<T> predecessor = predecessor(node);
+        if (predecessor == null) {   // Case tree has no left nodes, it will return the parent in
+            return Optional.empty(); // the called function, if the parent is null a null pointer
+        } else {                     // exception will occur without this if
+            return Optional.of(predecessor.data); 
+        }
+    }
+    */
+
+    public void printTree(Node<T> node) {
+        printTreeRec(node, 0);
+    }
+
+    private void printTreeRec(Node<T> node, int level) {
+        if (node != null) {
+            // Print spaces proportional to the level
+            for (int i = 0; i < level; i++) {
+                System.out.print("    ");
+            }
+
+            // Print node data, its height, balance factor, and parent
+            System.out.println(
+                node.data + " Height: " + getHeight(node) +
+                " Balance Factor: " + getBalanceFactor(node) +
+                " Parent: " + ((node.parent == null) ? "null" : node.parent.data)
+            );
+
+            int nextLevel = level + 1;
+
+            // Recursively print left and right subtrees, with increased level
+            if (node.left != null) {
+                printTreeRec(node.left, nextLevel);
+            } else { // If node.left is null, print a _ in the place
+                for (int i = 0; i < nextLevel; i++) {
+                    System.out.print("    ");
+                }
+                System.out.println("_");
+            }
+
+            if (node.right != null) {
+                printTreeRec(node.right, nextLevel);
+            } else { // If node.right is  is null, print a _ in the place
+                for (int i = 0; i < nextLevel; i++) {
+                    System.out.print("    ");
+                }
+                System.out.println("_");
+            }
+        }
+    }
+
+    public boolean search(T data) {
+        return iterSearch(root, data);
+    }
+
+    private boolean iterSearch(Node<T> node, T data) {
+        while (node != null) {
+            if (data.compareTo(node.data) == 0) {
+                return true;
+            } else if (data.compareTo(node.data) < 0) {
+                node = node.left;
+            } else {
+                node = node.right;
+            }
+        }
+        return false;
+    }
+
+    private boolean searchRec(Node<T> node, T data) {
+        if (node == null) {
+            return false;
+        }
+
+        if (node.data.compareTo(data) == 0) {
+            return true;
+        }
+
+        /*
+        if (searchRec(node.left, data) == false) {
+            return searchRec(node.right, data);
+        } else {
+            return true;
+        }
+        */
+        return searchRec(node.left, data) || searchRec(node.right, data);
+    }
+
+    // Search fn returning the node to use in other functions in middle of tree, like find the 
+    // minimum of a sub-tree.
+    public Node<T> searchNode(T data) {
+        return iterSearchNode(root, data);
+    }
+
+    private Node<T> searchNodeRec(Node<T> node, T data) {
+        if (node == null) {
+            return null;
+        }
+
+        if (data.compareTo(node.data) == 0) {
+            return node;
+        }
+
+        if (data.compareTo(node.data) < 0) {
+            return searchNodeRec(node.left, data);
+        } else {
+            return searchNodeRec(node.right, data);
+        }
+    }
+
+    private Node<T> iterSearchNode(Node<T> node, T data) {
+        while (node != null) {
+            if (data.compareTo(node.data) == 0) {
+                return node;
+            } else if (data.compareTo(node.data) < 0) {
+                node = node.left;
+            } else {
+                node = node.right;
+            }
+        }
+        return node;
+    }
+
+    public void insert(T data) {
+        root = insertRec(root, data, null);
+        //insertIter(data);
+    }
+
+    private Node<T> insertRec(Node<T> node, T data, Node<T> parent) {
+        // If the tree/subtree is empty, create a new node
+        if (node == null) {
+            Node<T> newNode = new Node<>(data);
+            newNode.parent = parent;
+            return newNode;
+        }
+
+        if (search(data)) {
+            System.out.println("*** Duplicates not allowed: " + data + ". ***");
+            return node;
+        }
+
+        int cmp = data.compareTo(node.data);
+
+        if (cmp < 0) {
+            // If the data is less than the node's data, go to the left subtree
+            node.left = insertRec(node.left, data, node); // node is now the parent of the newnode
+        } else if (cmp > 0) {                             // as we go down the tree
+            // If the data is greater than the node's data, go to the right subtree
+            node.right = insertRec(node.right, data, node);
+        }
+
+        setHeight(node);
+        return rebalance(node);
+    }
+
+    private void insertIter(T data) {
+        if (root == null) {
+            root = new Node<>(data);
             return;
         }
 
-        long startTime = System.nanoTime();
+        Node<T> node = root;
+        Node<T> p = null;
 
-        try (Stream<String> lines = Files.lines(Paths.get(path))) {        
-            lines.forEach(word -> tree.insert((T) word));
-        } catch (Exception e) {
-            System.out.println("File not found or unable to read file.");
-        }
-        /*try (BufferedReader bf = new BufferedReader(new FileReader("enw.txt"))) {
-            long startTime = System.nanoTime();
-            String word;
-            while ((word = bf.readLine()) != null) {
-                tree.insert((T) word);
+        while (node != null) {
+            p = node;
+            int cmp = data.compareTo(node.data);
+            if (cmp < 0) {
+                node = node.left;
+            } else if (cmp > 0) {
+                node = node.right;
+            } else {
+                return;
             }
-        } catch (Exception e) {
-            System.out.println("File not found.");
-        }*/
-        // unacceptable performance with scanner
-        /*try (Scanner sc = new Scanner(new File("words.txt"))) {
-            long startTime = System.nanoTime();
-            sc.useDelimiter("(\\n)");
-            while(sc.hasNext()) {
-                String word = sc.next();
-                if (word.length() > 0) {
-                    tree.insert((T) word);
+        }
+
+        Node<T> newNode = new Node<>(data);
+        newNode.parent = p;
+
+        if (data.compareTo(p.data) < 0) {
+            p.left = newNode;
+        } else {
+            p.right = newNode;
+        }
+
+        node = newNode;
+        p = newNode.parent;
+
+        while (p != null) {
+            setHeight(p);
+            p = rebalance(p);
+
+            node = p;
+            p = node.parent;
+        }
+
+        while (root.parent != null) {
+            root = root.parent;
+        }
+
+        /*
+        TREE-INSERT(T, Z)
+        1 y = NIL
+        2 x = T.root
+        3 while x != NIL
+        4   y = x
+        5   if Z.key < x.key
+        6       x = x.left
+        7   else x = x.right
+        8 Z.p = y
+        9 if y == NIL
+       10   T.root = Z  // tree T was empty
+       11 elseif Z.key < y.key
+       12   y.left = Z
+       13 else y.right = Z
+       */
+    }
+
+    public void remove(T data) {
+        root = removeRec(root, data);
+    }
+
+    // Copy
+    private Node<T> removeRec(Node<T> node, T data) {
+        if (!search(data)) {
+            System.out.println("*** Data not found. ***");
+            return node;
+        }
+
+        if (node == null) {
+            return node;
+        }
+
+        int cmp = data.compareTo(node.data);
+
+        if (cmp < 0) { // Traverse left in the tree
+            node.left = removeRec(node.left, data);
+        } else if (cmp > 0) { // Traverse right in the tree
+            node.right = removeRec(node.right, data);
+        } else { // Node found
+            if (node.left == null || node.right == null) { // Node with only one or no child
+                Node<T> temp = (node.left != null) ? node.left : node.right;
+
+                if (temp == null) { // No child case
+                    node = null;
+                } else { // One child case
+                    temp.parent = node.parent; // Update parent 
+                    node = temp; // Node to be "deleted" will be equal to either right or left
+                }
+
+            } else { // Two children deletion
+                Node<T> temp = minimum(node.right); // The successor to right of the deleted node
+                node.data = temp.data; // Assign the data in the temp to the node to be "deleted"
+                node.right = removeRec(node.right, temp.data); // remove the successor of the node
+            }
+        }
+
+        setHeight(node);
+        return rebalance(node);
+    }
+    
+    // Remove an entire sub-tree
+    public void massRemove(T data) {
+        root = massRemoveRec(root, data);
+    }
+    public Node<T> massRemoveRec(Node<T> node, T data) {
+        if (!search(data)) {
+            System.out.println("*** Data not found. ***");
+            return node;
+        }
+
+        if (node == null) {
+            return node;
+        }
+
+        int cmp = data.compareTo(node.data);
+
+        if (cmp < 0) {
+            node.left = massRemoveRec(node.left, data);
+        } else if (cmp > 0) {
+            node.right = massRemoveRec(node.right, data);
+        } else { // Node found
+            //node = null; // Remove as if they are leaf
+            return null; // returned null is assigned to left or right reference of the parent.
+        }
+        
+        setHeight(node);
+        return rebalance(node);
+    }
+
+    public void preorder() {
+        preorderRec(root);
+        System.out.println("");
+    }
+
+    private void preorderRec(Node<T> node) {
+        if (node != null) {
+            System.out.print(node.data + " "); // Visit node
+            preorderRec(node.left);            // Visit left subtree
+            preorderRec(node.right);           // Visit right subtree
+        }
+    }
+
+    public void postorder() {
+        postorderRec(root);
+        System.out.println("");
+    }
+
+    private void postorderRec(Node<T> node) {
+        if (node != null) {
+            postorderRec(node.left);           // Visit left subtree
+            postorderRec(node.right);          // Visit right subtree
+            System.out.print(node.data + " "); // Visit node
+        }
+    }
+
+    public void inorder() {
+        inorderRec(root);
+        System.out.println("");
+    }
+
+    private void inorderRec(Node<T> node) {
+        if (node != null) {
+            inorderRec(node.left);             // Visit left subtree
+            System.out.print(node.data + " "); // Visit node
+            inorderRec(node.right);            // Visit right subtree
+        }
+    }
+
+    // Will return a subtree that matches with a given prefix, or null if tree is not of type str
+    public Node<String> prefixMatch(String data, Class<T> type) {
+        if (!String.class.isAssignableFrom(type)) {
+            return null;
+        }
+        return prefixMatch((Node<String>) root, data);
+    }
+
+    public Node<String> prefixMatch(Node<String> node, String data) {
+        if (node == null) {
+            return null;
+        }
+        String nodeData = (String) node.data; // Explicit cast of node.data to a String
+        int lengthOfData = data.length();
+        String nodeDataSubstring = node.data.substring(0, lengthOfData);
+        if (nodeData.startsWith(data)) {
+            return node;
+        }
+
+        if (data.compareTo(nodeDataSubstring) < 0) {
+            return prefixMatch(node.left, data);
+        } else {
+            return prefixMatch(node.right, data);
+        }
+    }
+
+    public List<String> fuzzySearch(String data, int maxDistance, Class<T> type) {
+        if (!String.class.isAssignableFrom(type)) {
+            return null;
+        }
+        
+        List<String> result = new ArrayList<>();
+        fuzzySearch((Node<String>) root, data, maxDistance, result);
+        return result;
+    }
+
+    private void fuzzySearch(Node<String> node, String data, int maxDistance, List<String> result) {
+        if (node == null) {
+            return;
+        }
+        
+        int distance = levenshteinDistance(data, node.data);
+        if (distance <= maxDistance) {
+            result.add(node.data);
+        }
+        
+        fuzzySearch(node.left, data, maxDistance, result);
+        fuzzySearch(node.right, data, maxDistance, result);
+    }
+
+    private int levenshteinDistance(String a, String b) {
+        int[][] dp = new int[a.length() + 1][b.length() + 1];
+
+        for (int i = 0; i <= a.length(); i++) {
+            for (int j = 0; j <= b.length(); j++) {
+                if (i == 0) {
+                    dp[i][j] = j; // j insertions
+                } else if (j == 0) {
+                    dp[i][j] = i; // i deletions
+                } else if (a.charAt(i - 1) == b.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1]; // No cost if characters are same
+                } else {
+                    dp[i][j] = 1 + Math.min(dp[i - 1][j - 1], // Substitution
+                                   Math.min(dp[i - 1][j],     // Deletion
+                                            dp[i][j - 1]));   // Insertion
                 }
             }
-        } catch (Exception e) {
-            System.out.println("File not found.");
-        }*/
-        long endTime = System.nanoTime();
-        System.out.println("Duration: " + ((endTime - startTime) / 1000000) + "ms");
+        }
+        return dp[a.length()][b.length()];
+    }
+
+    private Node<T> rebalance(Node<T> node) {
+        int balanceFactor = getBalanceFactor(node);
+
+        // Balancing tree
+        // Left Left Case
+        if (balanceFactor > 1 && getBalanceFactor(node.left) >= 0) {
+            //System.out.println("*** Performing right rotation on " + node.data + ". ***");
+            return rightRotation(node);
+        }
+
+        // Right Right Case
+        if (balanceFactor < -1 && getBalanceFactor(node.right) <= 0) {
+            //System.out.println("*** Performing left rotation on " + node.data + ". ***");
+            return leftRotation(node);
+        }
+
+        // Left Right Case
+        if (balanceFactor > 1 && getBalanceFactor(node.left) < 0) {
+            //System.out.println(
+            //    "*** Performing left-right rotation on " + node.left.data +
+            //    " and " + node.data + ". ***"
+            //);
+            node.left = leftRotation(node.left);
+            return rightRotation(node);
+        }
+
+        // Right Left Case
+        if (balanceFactor < -1 && getBalanceFactor(node.right) > 0) {
+            //System.out.println(
+            //    "*** Performing right-left rotation on " + node.right.data +
+            //    " and " + node.data + ". ***"
+            //);
+            node.right = rightRotation(node.right);
+            return leftRotation(node);
+        }
+        return node;
+    }
+
+    /*
+                4                          2
+               / \                        / \
+              2   6                      1   4
+             / \               =>       /   / \
+            1   3                     -1   3   6
+           /
+         -1
+    4 = node                   | 2 = leftOfNode
+    6 = node.right (unchanged) | 4 = leftOfNode.right (node)
+    2 = node.left (leftOfNode) | 1 = leftOfNode.left
+    1 = leftOfNode.left        | 3 = node.left
+    3 = leftOfNode.right       | 6 = node.right
+    */
+    private Node<T> rightRotation(Node<T> node) { // 4 where imbalance happens
+        Node<T> leftOfNode = node.left; // 2 the new root of subtree
+        Node<T> rightOfLeftNode = leftOfNode.right; // 3 right of the left of node
+
+        leftOfNode.right = node; // 4 goes to the left of 2
+        node.left = rightOfLeftNode; // 3 goes to the left of 4
+
+        // Update parents
+        if (rightOfLeftNode != null) {
+            rightOfLeftNode.parent = node; // 3 is now parent of 4
+        }
+        leftOfNode.parent = node.parent; // the parent of 4 is now the parent of 2
+        node.parent = leftOfNode; // 2 is now parent of 4
+
+        setHeight(node);
+        setHeight(leftOfNode);
+
+        return leftOfNode;
+    }
+
+    /*
+                4                          6
+               / \                        / \
+              2   6                      4   8
+                 / \           =>       / \   \
+                5   8                  2   5   9
+                     \
+                      9
+    4 = node                     | 6 = rightOfNode
+    6 = node.right (rightOfNode) | 4 = leftOfNode.right (node)
+    2 = node.left (unchanged)    | 8 = leftOfNode.left
+    5 = rightOfNode.left         | 2 = node.left
+    8 = rightOfNode.right        | 5 = node.right
+    */
+    private Node<T> leftRotation(Node<T> node) {
+        Node<T> rightOfNode = node.right;
+        Node<T> leftOfRightNode = rightOfNode.left;
+
+        rightOfNode.left = node;
+        node.right = leftOfRightNode;
+
+        // Update parents
+        if (leftOfRightNode != null) {
+            leftOfRightNode.parent = node;
+        }
+        rightOfNode.parent = node.parent;
+        node.parent = rightOfNode;
+
+        setHeight(node);
+        setHeight(rightOfNode);
+
+        return rightOfNode;
+    }
+
+    // not used    
+    private void transplant(Node<T> toBeTransplanted, Node<T> newRoot) {
+        if (toBeTransplanted.parent == null) {
+            this.root = newRoot;
+        } else if (toBeTransplanted == toBeTransplanted.parent.left) {
+            toBeTransplanted.parent.left = newRoot;
+        } else {
+            toBeTransplanted.parent.right = newRoot;
+        }
+
+        if (newRoot != null) {
+            newRoot.parent = toBeTransplanted.parent;
+        }
     }
 }
